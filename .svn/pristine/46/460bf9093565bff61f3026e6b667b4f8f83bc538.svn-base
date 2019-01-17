@@ -1,0 +1,38 @@
+@CHARSET "UTF-8";
+.text_underline{
+	text-align:center;
+	text-decoration:underline;
+}
+tr{
+	border:1px solid #000!important;
+}
+th{
+	vertical-align: middle!important;
+	border:1px solid #000!important;
+	padding: 5px!important;
+    line-height: 1.42857143;
+    font-weight: bold !important;
+}
+td{ 
+	text-align:center;
+	border:1px solid #000!important;
+}
+.row {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+.inputText{
+	border:0;
+	outline: none;
+	width: 100%;
+	text-align: center;
+}
+select{
+	/* border:0;
+	outline: none; */
+	text-align: center;
+    text-align-last: center;
+}
+.active{
+	background-color: #e5e5e5;
+}

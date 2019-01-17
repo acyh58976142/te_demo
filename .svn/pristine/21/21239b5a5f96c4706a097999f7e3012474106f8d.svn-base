@@ -1,0 +1,83 @@
+.login-page {
+	width:100%;
+	height:100%;
+	background:#d4edfc url(../../../resource/images/login/bg.jpg) no-repeat center top; 
+	background-size:100% 100%;
+	filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
+   	-moz-background-size:100% 100%;
+	position:absolute; 
+	overflow:auto;
+	// min-width:1000px;
+}
+.login-box{
+    margin: -6% 20px 0px 0px;
+    float: right;
+}
+.Project_login-box{
+    margin: -3% 0px 0px 20px;
+    float: left;
+}
+.Project_login-logo{
+  font-size: 35px;
+  text-align: right;
+  margin-bottom: 25px;
+  font-weight: 300;
+}
+.login-box-body {
+	login-box-body
+}
+.image_bg {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+.login-uselogin{
+	font-size:20px;
+	color: white;
+	margin-bottom: 20px;
+}
+.login-row{
+	padding:10px;
+	margin-right: 0px;
+	margin-left: 0px;
+}
+.login-font-color{
+	color: white;
+}
+.login_forminput{
+	height: 34px;
+	border-left-color: white;
+	padding-left: 45px;
+	padding-bottom: 3px;
+	border-radius: 3px;
+}
+#loginBtn{
+	width: 275px;
+	background-color: #27A5FA;
+	color: white;
+}
+.login-input-group{
+	width: 275px;
+}
+.login-logo1{
+	margin-bottom: 25px;
+	font-weight: 300;
+	padding: 15px;
+}
+.icon-user{
+    margin: 5px 8px;
+    width: 25px;
+    height: 24px;
+    position: absolute;
+    background-position: 0px 0px;
+    z-index: 40;
+    left: 0;
+
+}
+input.login_forminput:FOCUS {
+	border: 2px solid #27A5FA;
+}
+.error{
+	color:yellow;
+}

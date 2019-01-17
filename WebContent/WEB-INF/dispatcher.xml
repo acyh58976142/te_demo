@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+	http://www.springframework.org/schema/context  
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-3.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<context:component-scan base-package="com.hr.td.controller" />
+	<context:component-scan base-package="com.hr.td.appserver" />
+	<context:component-scan base-package="com.hr.td.service" />
+	<context:component-scan base-package="com.hr.td.service.impl" />
+	<context:component-scan base-package="com.hr.td.dao" />
+	<context:component-scan base-package="com.hr.td.entity" />
+	<context:annotation-config/>
+	
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jsonMessage" />
+				<ref bean="stringMessage" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="jsonMessage"
+		class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+
+	<bean id="stringMessage" class = "org.springframework.http.converter.StringHttpMessageConverter">  
+          <property name = "supportedMediaTypes">  
+                <list>  
+                    <value>text/html;charset=UTF-8</value>  
+                </list>  
+          </property>
+    </bean>
+    <bean id="transactionInterceptor"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<!-- 配置事务属性 -->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="delete*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
+				<prop key="update*">
+					PROPAGATION_REQUIRED,-Exception
+				</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>				
+			</props>
+		</property>
+	</bean>
+    <!-- 定义事务处理代理bean,他需要两个属性,一个是指定需要代理的bean,另一个是代理bean所需的事务拦截器 -->
+	<!-- 以下为自动代理 *ServiceImpl--> 
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<!--service impl will be added here, using full name-->
+				<value>*ServiceImpl</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>transactionInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	 <!-- 支持上传文件 -->  
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+             <property name="defaultEncoding" value="UTF-8"></property>
+    </bean>   
+        
+    <!-- 配置action 跳转补全信息 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <property name="prefix" value="/pages" />
+	    <property name="suffix" value=".jsp" />
+	    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+	</bean>
+	
+	<task:executor id="executor" pool-size="100"/>
+	<task:scheduler id="scheduler" pool-size="200"/>
+	<task:annotation-driven executor="executor" scheduler="scheduler"/>
+</beans>

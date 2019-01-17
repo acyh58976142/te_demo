@@ -1,0 +1,46 @@
+.headDiv {
+	width: 30%;
+	height: 220px;
+	margin: auto;
+	margin-top: 10%;
+	background-color: rgba(128, 128, 128, 0.6);
+	min-width: 360px;
+}
+
+.input-group {
+	margin: auto;
+}
+
+h3 {
+	text-align: center;
+	color: white;
+}
+
+.magintop-row {
+	margin-top: 15px;
+}
+
+.common-info {
+	border: 1px solid #ccc;
+	padding: 2px 20px 2px 5px;
+	color: #666;
+	position: relative;
+	line-height: 20px;
+	background-color: #fff;
+	top: -65px;
+	right: -60px;
+	z-index: 99999;
+	float: right;
+}
+
+.common-info span {
+	display: block;
+}
+
+an {
+	display: block;
+}
+
+.layui-layer-setwin{
+	display: none !important;
+}

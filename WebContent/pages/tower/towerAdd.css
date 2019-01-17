@@ -1,0 +1,52 @@
+.headDiv {
+	width: 40%;
+	min-height: 350px;
+	margin: auto;
+	margin-top: 5%;
+	min-width: 360px;
+}
+
+.input-group {
+	margin: auto;
+}
+
+h3 {
+	text-align: center;
+}
+
+.magintop-row {
+	margin-top: 15px;
+}
+
+.common-info {
+	border: 1px solid #ccc;
+	padding: 2px 20px 2px 5px;
+	color: #666;
+	position: relative;
+	line-height: 20px;
+	background-color: #fff;
+	top: -65px;
+	right: -60px;
+	z-index: 99999;
+	float: right;
+}
+
+.common-info span {
+	display: block;
+}
+
+an {
+	display: block;
+}
+
+.delFile-img{
+	margin-left: 10px;
+	font-size: 24px;
+	color: red;
+}
+
+.replaceFile-img{
+	margin-left: 10px;
+	font-size: 24px;
+	color: red;
+}

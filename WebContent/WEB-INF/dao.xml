@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       classpath:/org/springframework/context/config/spring-context-3.0.xsd">
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+            	 <value>/WEB-INF/jdbc.properties</value><!-- /WebContent/WEB-INF/jdbc.properties （ main函数启动加载路径需加上/WebContent目录） -->
+            </list>
+        </property>
+    </bean>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">  
+        <property name="driverClass" value="${td.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${td.jdbc.url}" />
+		<property name="user" value="${td.jdbc.username}" />
+		<property name="password" value="${td.jdbc.password}" />    
+	    <property name="autoCommitOnClose" value="true"/>   
+	    <property name="minPoolSize" value="3"/>        
+	    <property name="maxPoolSize" value="15"/>    
+	    <property name="initialPoolSize" value="5"/>    
+	    <property name="maxIdleTime" value="300"/>         
+	    <property name="acquireIncrement" value="3"/>        
+	    <property name="acquireRetryAttempts" value="5"/>      
+        <property name="checkoutTimeout" value="0"/>   
+    </bean>
+	
+	<bean id="sessionFactory"
+       		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">   
+   		<property name="dataSource">
+            <ref local="dataSource" />
+        </property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.hr.td.entity</value>
+			</list>
+		</property>
+		
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.jdbc.batch_size">50</prop>
+				<prop key="hibernate.jdbc.fetch_size">50</prop>
+            </props>
+        </property>
+    </bean>
+	
+    <!--TransactionManager,不管JDBC还是hibernate都使用，可以实现混合事务-->
+    <bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+	
+	<!--TransactionTemplate-->
+	 <bean id="transactionTemplate"  
+        class="org.springframework.transaction.support.TransactionTemplate">   
+        <property name="transactionManager">   
+            <ref bean="transactionManager" />   
+        </property>   
+    </bean> 
+	
+	<!--JdbcTemplate DAO-->
+    <bean id="jdbcTemplateDao" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/> 
+    </bean>
+    
+    <!--Hibernate DAO-->
+    <bean id="hibernateDao" class="com.hr.td.dao.HibernateDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	 <bean id="baseDao" class="com.hr.td.dao.BaseDaoImpl">
+	      <property name="hibernateDAO" ref="hibernateDao"></property>
+		  <property name="jdbcTemplateDAO" ref="jdbcTemplateDao"></property>
+	   </bean>
+	
+</beans>

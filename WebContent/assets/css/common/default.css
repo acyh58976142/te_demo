@@ -1,0 +1,257 @@
+.container {
+	margin: 0px 0px 0px 0px !important;
+	width: 100% !important;
+	height: 100% !important;
+	background-color: white !important;
+}
+
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
+	.col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+	padding: 5px 5px 5px 5px !important;
+}
+
+.table.table-hover.table-bordered thead {
+	background-color: #F8F9FB;
+}
+
+.table .table-hover .table-bordered th {
+	text-align: center;
+	vertical-align:middle;
+}
+
+.table.table-hover.table-bordered td {
+	text-align: center;
+	vertical-align:middle;
+}
+
+th {
+	text-align: center !important;
+	font-weight:bold !important;
+}
+
+.pagination {
+	padding: 0px 0px !important;
+}
+
+.textareaMax {
+	width: 100%;
+	height: 300px;
+}
+
+.textareaMiddle {
+	width: 100%;
+	height: 100px;
+}
+
+.textareaMin {
+	width: 100%;
+	height: 40px;
+}
+
+.hrline {
+	border-top: 2px solid red !important;
+}
+
+.hrlineGray {
+	border-bottom: 2px solid gray !important;
+}
+
+.border_bottom {
+	border-bottom: 1px solid gray;
+}
+
+.childrenTable {
+	margin: 0px 0px 0px 0px;
+}
+
+.row_serch {
+	/* background-color: #F8F5F0; */
+	/* border-bottom: 1px solid #F5F1B1; */
+	border-bottom: 1px solid #DBE4EB;
+}
+.row_color {
+	background-color: white;
+	border-bottom: 0px solid #F5F1B1;
+}
+.input_time {
+	min-width: 160px !important;
+}
+.borderInfo{
+	border: 1px solid gray !important;
+	margin: 3px 3px 3px 3px !important;
+}
+.text-color{
+	color: red !important;
+}
+.input_info{
+	width: 180px;
+}
+.fileNoColor{
+	color: blue;
+	cursor: pointer;
+}
+/**错误验证提示信息**/
+.common_wrong {
+    color: red;
+    padding-left: 20px;
+    white-space: nowrap;
+    background: url("img/error.png") no-repeat left center;
+    margin-left: 8px;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    font-size: 12px;
+}
+.common-info {
+    border: 1px solid #ccc;
+    padding: 2px 20px 2px 5px;
+    color: #666;
+    position: absolute;
+    line-height: 20px;
+    background-color: #fff;
+    top: -35px;
+    right: 0;
+    z-index:99999;
+}
+.common-info .dec {
+    bottom: -8px;
+    display: block;
+    height: 8px;
+    overflow: hidden;
+    position: absolute;
+    left: 10px;
+    width: 17px;
+}
+.common-info .dec s {
+    font-family: simsun;
+    font-size: 16px;
+    height: 19px;
+    left: 0;
+    line-height: 21px;
+    position: absolute;
+    text-decoration: none;
+    top: -9px;
+    width: 17px;
+}
+.common-info .dec .dec1 {
+    color: #ccc;
+}
+.common-info .dec .dec2 {
+    color: #fff;
+    top: -10px;
+}
+/* 必填字段  */
+.common-formRequired{
+	color:red;
+	margin-right:5px;
+}
+
+
+.border_style {
+	margin-top: 50px;
+	background-color: #F7F7F7;
+	height: 100%;
+	box-shadow: 0px 0px 5px 1px #888888;
+}
+
+.title_style {
+	color: #31708F
+}
+
+ .col-md-offset-1,
+.btn,
+.btn-primary,
+
+/******/
+.img-margin-top{
+	margin-top: 5px;
+}
+
+.table-margin-top{
+	margin-top: -15px;
+}
+.common-border{
+	border: 1px solid #DBE4EB;
+}
+.btn-line-height{
+    line-height: 0.428571 !important;
+}
+.common-padding{
+	padding: 0px 5px 2px 5px !important;
+}
+ .table-bordered>thead>tr>th {
+    border-bottom: 0px;
+    padding-right: 0px !important;
+}
+.img-height{
+	height:30px !important;
+	width:70px !important;
+}
+.font-color-refuse{
+	color: red;
+}
+.font-color-agree{
+	color: green;
+}
+
+.form-control{
+	background-color:white !important;
+}
+
+.row_page {
+	margin: 0px 0px !important;
+}
+/* .layui-layer-setwin{
+	display: none;
+} */
+
+.common-paddingTop{
+	padding-top: 0px !important;
+}
+
+ .layui-layer-setwin{
+	display: none !important;
+} 
+
+.div_top_border{
+	border-top: 1px solid rgba(128, 128, 128, 0.18) !important;
+}
+
+.table{
+	margin-top: 0px;
+	margin-bottom:0px;
+	vertical-align:middle;
+	text-align:center;
+	width: 100% !important;
+}
+.table tbody tr{
+	min-height: 36px;
+}
+.table tbody tr:hover{
+	background-color:#5BC0DE;
+}
+
+.table > thead > tr > th {
+    background-color: #f2f2f2!important;
+    color: #1e1c1c;
+    font-weight:bold;
+	white-space: nowrap !important;
+	text-align : center !important;
+	font-weight: normal;
+	padding: 8px!important;
+}
+
+.common_checked_tr {
+	background-color:#d9edf7 !important;
+	color: #666666;
+}
+.ztree_div {
+	height: 120px !important;
+	overflow: auto !important;
+	width: 70%;
+	margin-left:98px;
+	background-color: white;
+	border: 1px solid gray !important;
+	position:absolute;	
+	z-index: 20;
+	}

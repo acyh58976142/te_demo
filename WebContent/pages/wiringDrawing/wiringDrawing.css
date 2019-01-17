@@ -1,0 +1,51 @@
+.margin-row-none {
+	margin: 0px !important;
+}
+
+select option {
+	background: #FFFFFF;
+}
+
+.insideInput {
+	text-align: center;
+	border: none;
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+}
+
+.table tbody tr:hover {
+	background-color: #FFFFFF;
+}
+
+.container {
+	overflow-x: auto;
+	white-space: nowrap;
+	height: auto !important;
+}
+
+tr th {
+	height: 60px;
+	vertical-align: middle !important;
+}
+
+#zfstatd {
+	display: none;
+}
+
+#stringTab a{
+	font-size: 10px !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
