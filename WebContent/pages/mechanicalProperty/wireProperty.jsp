@@ -23,11 +23,6 @@
 	href="<%=basePath%>assets/plugins/datatables/dataTables.bootstrap.css"
 	rel="stylesheet" />
 
-<!-- ZTree css -->
-<link
-	href="<%=basePath%>assets/js/ztree/zTree_v3/css/zTreeStyle/zTreeStyle.css"
-	rel="stylesheet">
-
 <!-- common css -->
 <link href="<%=basePath%>assets/css/common/default.css" rel="stylesheet" />
 <!-- 自定义css -->
@@ -44,14 +39,19 @@
 			data-toggle="tab">导线计算书</a></li>
 		<li><a href="#wireProperty" class="activeIdHref" data-toggle="tab">导线力学特性表</a></li>
 		<li><a href="#wireStringing" class="activeIdHref" data-toggle="tab">导线架线表</a></li>
-		<li><a href="#groundComputeBook" data-toggle="tab" class="activeIdHref"
-			data-toggle="tab">地线计算书</a></li>
+		<li><a href="#groundComputeBook" class="activeIdHref"	data-toggle="tab">地线计算书</a></li>
 		<li><a href="#groundProperty" class="activeIdHref" data-toggle="tab">地线力学特性表</a></li>
 		<li><a href="#groundStringing" class="activeIdHref" data-toggle="tab">地线架线表</a></li>
 		<li class="pull-right"><button type="button"
 				class="btn btn-success" id="addBtn">
 				<span class="glyphicon glyphicon-plus"></span>&nbsp;导出
 			</button></li>
+		<li class="pull-right"><button class="btn btn-warning" id="saveBtn"  style="margin-right: 5px;">
+					<i class="glyphicon glyphicon-search"></i>&nbsp;保存
+				</button></li>
+		<li class="pull-right"><button class="btn btn-danger" id="calcBtn"  style="margin-right: 5px;">
+					<i class="glyphicon glyphicon-transfer"></i>&nbsp;计算
+				</button></li>
 	</ul>
 	<div class="container">
 		<div id="tabs" class="tab-content">
@@ -63,26 +63,12 @@
 
 			<!-- 导线计算书结束 -->
 
-			<!-- 地线计算书开始 -->
-			<div class="tab-pane fade" id="groundComputeBook">
-				<div id="groundComputeBookContainer"
-					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
-			</div>
-			<!-- 地线计算书结束 -->
-
 			<!-- 导线力学特性表开始 -->
 			<div class="tab-pane fade" id="wireProperty">
 				<div id="wirePropertyContainer"
 					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
 			</div>
 			<!-- 导线力学特性表结束 -->
-
-			<!-- 地线力学特性表开始 -->
-			<div class="tab-pane fade" id="groundProperty">
-				<div id="groundPropertyContainer"
-					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
-			</div>
-			<!-- 地线力学特性表结束 -->
 			
 			<!-- 导线架线表开始 -->
 			<div class="tab-pane fade" id="wireStringing">
@@ -91,6 +77,20 @@
 			</div>
 			<!-- 导线架线表结束 -->
 			
+			<!-- 地线计算书开始 -->
+			<div class="tab-pane fade" id="groundComputeBook">
+				<div id="groundComputeBookContainer"
+					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
+			</div>
+			<!-- 地线计算书结束 -->
+
+			<!-- 地线力学特性表开始 -->
+			<div class="tab-pane fade" id="groundProperty">
+				<div id="groundPropertyContainer"
+					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
+			</div>
+			<!-- 地线力学特性表结束 -->
+
 			<!-- 地线架线表开始 -->
 			<div class="tab-pane fade" id="groundStringing">
 				<div id="groundStringingContainer"
@@ -122,6 +122,8 @@
 <script type="text/javascript"
 	src="<%=basePath%>assets/js/zcell/ZCell.min.js"></script>
 <script type="text/javascript"
+	src="<%=basePath%>assets/js/zcell/ZCell-util.js"></script>
+<script type="text/javascript"
 	src="<%=basePath%>assets/js/common/default.js"></script>
 <script type="text/javascript"
 	src="<%=basePath%>assets/plugins/validate/jquery.metadata.js"></script>
@@ -132,10 +134,12 @@
 <!-- 自定义js -->
 <script type="text/javascript"
 	src="<%=basePath%>pages/mechanicalProperty/wireProperty.js"></script>
-	<script type="text/javascript"
-	src="<%=basePath%>pages/mechanicalProperty/ZCell-util.js"></script>
+<script type="text/javascript"
+	src="<%=basePath%>pages/mechanicalProperty/groundProperty.js"></script>
+
 <script>
 	var basePath="<%=basePath%>";
 	var wireProperty = new wireProperty();
+	var groundProperty = new groundProperty();
 </script>
 </html>

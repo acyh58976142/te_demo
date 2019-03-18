@@ -21,11 +21,7 @@ import com.hr.td.util.TxtRead;
 @RequestMapping(value = "/serialConfig")
 public class SerialConfigController {
 	@Autowired
-	public ICommonFileService fileService;
-	@Autowired
 	public ISerialConfigService serialConfig;
-	@Autowired
-	public IBaseDao baseDao;
 	/**
 	* @Title: getConductorGroup  
 	* @Description: 获取初始化数据
@@ -53,14 +49,6 @@ public class SerialConfigController {
 		result.put("insulatorlist", insulatorlist);
 		result.put("fittinglist", fittinglist);
 		return result;
-	}
-	
-	/**
-	 * 根据主键获取工程实体
-	 */
-	public MainInfo getMainInfo(String id) {
-		MainInfo main =(MainInfo) baseDao.getEntity(MainInfo.class, id);
-		return main;
 	}
 	
 }

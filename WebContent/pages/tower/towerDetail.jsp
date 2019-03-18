@@ -105,7 +105,7 @@ td{
 
 </table>
 
-<table id="explainTable" style="display: none">
+<!-- <table id="explainTable" style="display: none">
 <tr style="text-align:center; height: 18px"><td style="width: 30px;"></td><td style="width: 100px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width:30px;"></td><td style="width: 55px;">
 </td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td>
 <td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width:30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td><td style="width: 30px;"></td><td style="width: 55px;"></td></tr>
@@ -124,7 +124,7 @@ td{
 <td></td><td></td><td></td><td></td><td></td><td></td><td colspan="3" rowspan="2" style="border: 1px solid black">说明页</td><td colspan="6" style="border: 1px solid black">图     号</td><td colspan="2" style="border: 1px solid black">图纸级别</td></tr>
 <tr style="text-align:center; height: 18px"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 <td></td><td></td><td></td><td></td><td></td><td></td><td colspan="6" style="border: 1px solid black"><span id="pageCode"></span></td><td colspan="2" style="border: 1px solid black">3</td></tr>
-</table>
+</table> -->
 </body>
 <script type="text/javascript" src="<%=basePath%>assets/js/zcell/jquery.min.js"></script>
 <script type="text/javascript" src="<%=basePath%>assets/js/zcell/ZCell.register.js"></script>
@@ -135,6 +135,7 @@ td{
 <script type="text/javascript">
     var path="<%=basePath%>"; 
     var id = '${requestScope.id}'; 
+    var projectCode = '${requestScope.projectCode}'; 
     var attr = '${requestScope.attList}'; 
     var angle = '${requestScope.tower.angle_change_list}'; 
     var connect = '${requestScope.tower.connect_change_list}'; 

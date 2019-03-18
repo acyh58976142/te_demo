@@ -4,6 +4,7 @@ function projectList(){
 	
 	$("#drl_btnNew").on("click",this.newFile);
 	$("#drl_btnEdit").on("click",this.editFile);
+	$("#drl_btnExplain").on("click",this.explainFile);
 
 	//预加载事件
 	$("#projectApply_table").delegate(".see","click", this.seeClick);
@@ -94,6 +95,26 @@ projectList.prototype.editFile=function(){
 
 }
 
+/**
+ * 说明点击事件
+ */
+projectList.prototype.explainFile=function(){
+
+	var id = "";
+	var trs = $("#projectApply_table tbody tr.common_checked_tr");
+	if(trs.length>0){
+		var tr = trs.eq(0).closest('tr');
+		var data = $('#projectApply_table').dataTable().fnGetData(tr);
+		var id = data.id;
+
+		location.href=path+"/Tower/towerExplain.action?id="+id;
+	}
+	else
+	{
+		Tools.tipsMsg('请选择数据!');
+	}
+
+}
 /**
  * 修改点击事件
  */

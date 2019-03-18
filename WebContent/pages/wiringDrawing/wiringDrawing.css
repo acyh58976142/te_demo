@@ -29,22 +29,32 @@ tr th {
 	vertical-align: middle !important;
 }
 
-#zfstatd {
-	display: none;
-}
-
 #stringTab a{
 	font-size: 10px !important;
 }
 
 
+.Alabel{
+	display: none;
+	font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
 
+.tab-group-control{
+	margin: 5px 5px 0px 0px;
+}
+.tab-addon{
+	background-color: #F2F2F2 !important;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius:0px;
+}
 
+.cell_editor {
+    margin-top: 50px;
+}
 
-
-
-
-
+	
 
 
 

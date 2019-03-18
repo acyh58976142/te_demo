@@ -47,7 +47,9 @@ tr th {
     font-size: inherit;
     line-height: inherit;
 }
-
+.cell_editor{
+	margin-top: 50px !important;
+}
 
 
 

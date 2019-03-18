@@ -1,5 +1,6 @@
 package com.hr.td.controller.tower;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.hr.td.entity.Attachment;
+import com.hr.td.entity.GeologicalSchedule;
 import com.hr.td.entity.HorizontalTension;
+import com.hr.td.entity.MainInfo;
+import com.hr.td.entity.Parts;
+import com.hr.td.entity.Tower;
+import com.hr.td.service.tower.IPartsService;
 import com.hr.td.service.tower.ITowerLoadService;
+import com.hr.td.service.tower.ITowerService;
+import com.hr.td.util.DataTablePage;
 import com.hr.td.util.DynamicsFeatures;
+import com.hr.td.util.Page;
+import com.hr.td.util.PropertiesConfig;
+import com.hr.td.util.TAUtil;
 import com.hr.td.util.ToolsUtil;
 
 /**
@@ -27,7 +41,13 @@ import com.hr.td.util.ToolsUtil;
 public class TowerLoadController {
 	
 	@Autowired
+	private ITowerService towerService;// 杆塔明细的接口
+	
+	@Autowired
 	private ITowerLoadService loadService;//杆塔荷载接口
+	
+	@Autowired
+	private IPartsService partsService;//组配件明细表
 	
 	/**
 	 * 查询导地线参数
@@ -38,7 +58,8 @@ public class TowerLoadController {
 	@ResponseBody
 	public Map<String, Object> getGroundGuidParam(HttpServletRequest request){
 		Map<String, Object> map=new HashMap<String, Object>();
-		List<Map<String, Object>> paramList=loadService.getGroundGuideParam();
+		Map<String, String> param=new HashMap<String, String>();
+		List<Map<String, Object>> paramList=loadService.getGroundGuideParam(param);
 		if(!ToolsUtil.isEmpty(paramList)){
 			map.put("code", "200");
 			map.put("data", paramList);
@@ -50,21 +71,31 @@ public class TowerLoadController {
 	}
 	
 	/**
-	 *查询水平张力 
 	 * 
+	 * @param request
+	 * @param 代表档距 representativeSpan
+	 * @param 导线型号 conductor_type
+	 * @return
 	 */
 	@RequestMapping(value="getHorizontalTension.action")
 	@ResponseBody
-	public  Map<String,Object> getHorizontalTension(HttpServletRequest request) {
+	public  Map<String,Object> getHorizontalTension(HttpServletRequest request,double representativeSpan,String conductor_type) {
 		Map<String, Object> mapHor=new HashMap<String, Object>();
 		Map<String, Object> map1=new HashMap<String, Object>();
+		Map<String, String> param=new HashMap<String, String>();
+		param.put("conductor_type", conductor_type);
+		Map<String, Object> paramMap=null;
+		List<Map<String, Object>> paramList=loadService.getGroundGuideParam(param);
+		if(!ToolsUtil.isEmpty(paramList)){
+			paramMap=paramList.get(0);
+		}
 		List<Double> steps = new ArrayList<Double>();
-		steps.add((double)10);
-		steps.add((double)10);
-		steps.add((double)800);
+		steps.add(representativeSpan);
+		steps.add(representativeSpan);
+		steps.add(representativeSpan);
 		Map<String,String> baseParam=new HashMap<>();
 		baseParam = new HashMap<String,String>();
-		baseParam.put("dxxh", "JL/G1A-300/25");//导线型号
+		baseParam.put("dxxh", conductor_type);//导线型号
 		baseParam.put("zdzl", "0.25");//最大平均运行张力
 		baseParam.put("aqxs", "8");//设计安全系数
 		baseParam.put("jxjw", "-25");//架线初伸长降温
@@ -75,12 +106,19 @@ public class TowerLoadController {
 		
 		Map<String,String> wirewayParam=new HashMap<>();
 		wirewayParam  = new HashMap<String,String>();
-		wirewayParam.put("txxs", "65000");//弹性系数
-		wirewayParam.put("pzxs", "0.0000205");//线膨胀系数
-		wirewayParam.put("cdzl", "1.0579");//单位长度重量
-		wirewayParam.put("wj", "23.76");//外径
-		wirewayParam.put("jsjm", "333.31");//计算截面
-		wirewayParam.put("ldl", "79569.15");//拉断力
+//		wirewayParam.put("txxs", "65000");//弹性系数
+//		wirewayParam.put("pzxs", "0.0000205");//线膨胀系数
+//		wirewayParam.put("cdzl", "1.0579");//单位长度重量
+//		wirewayParam.put("wj", "23.76");//外径
+//		wirewayParam.put("jsjm", "333.31");//计算截面
+//		wirewayParam.put("ldl", "79569.15");//拉断力
+		wirewayParam  = new HashMap<String,String>();
+		wirewayParam.put("txxs", formatData(paramMap.get("modulus_elasticity")));//弹性系数
+		wirewayParam.put("pzxs", formatData(paramMap.get("tem_exp_coefficient")));//线膨胀系数
+		wirewayParam.put("cdzl",  formatData(paramMap.get("unit_weight0")));//单位长度重量
+		wirewayParam.put("wj",  formatData(paramMap.get("diameter")));//外径
+		wirewayParam.put("jsjm",  formatData(paramMap.get("cross_section_area")));//计算截面
+		wirewayParam.put("ldl",  formatData(paramMap.get("breaking_force")));//拉断力
 		List<Map<String,String>> weatherConditions = new ArrayList<>();
 		 weatherConditions= new ArrayList<Map<String,String>>();
 		 
@@ -277,6 +315,101 @@ public class TowerLoadController {
 		}
 		return mapHor;
 		}
+	
+	public List<List<List<String>>> getTowerList(String id){
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<Attachment> attachList = towerService.getAttachment(id);
+		// 获得文件要存储的根目录的磁盘路径
+		String rootPath = PropertiesConfig.getInstance().getProperty("upload_store_root");
+		List<File> list = new ArrayList<File>();
+		for (int i = 0; i < attachList.size(); i++) {
+			Attachment attach = attachList.get(i);
+			String path = attach.getFilePath();// TA文件保存路径
+			File file = new File(rootPath + path);
+			list.add(file);
+		}
+		List<List<List<String>>> result = TAUtil.readTa(list);
+		return result;
+	}
 		
+	@RequestMapping(value = "getTowerList.action")
+	@ResponseBody
+	public Map<String, Object> getTowerList(HttpServletRequest request, DataTablePage page,String id) {
+		List<List<List<String>>> towerDetailList = getTowerList(id);
+		List<Map<String, Object>> towerList = new ArrayList<Map<String, Object>>(); 
+		try {
+			for(int m= 0; m < towerDetailList.size(); m++){
+				List<List<String>>  towerDetail=towerDetailList.get(m);
+			  for (int i = 0; i < towerDetail.size(); i++) {
+				List<String> tower = towerDetail.get(i);
+				String towerNum=tower.get(0)+"+"+TAUtil.getMileage(tower.get(2));// 杆塔编号+塔位里程
+				String towerType=tower.get(8);
+				String towerGao=tower.get(9);
+				String turnAngle=TAUtil.getAngle(tower.get(20));
+				Map<String, Object> map=new HashMap<String, Object>();
+				map.put("number", towerNum);
+				map.put("towerNum", tower.get(0));
+				map.put("towerMileage", TAUtil.getMileage(tower.get(2)));
+				map.put("towerType", towerType);
+				map.put("towerGao", towerGao);
+				map.put("turnAngle", turnAngle);
+				towerList.add(map);	
+			   }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return page.toReturnMap(towerList, towerList.size());
+	} 
+	
+	/**
+	 * 获取杆塔数据
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "getTowerInfo.action")
+	@ResponseBody
+	public Map<String, Object> getTowerInfo(String id) {
+		Map<String, Object> map=new HashMap<String, Object>();
+		
+		MainInfo main = towerService.getMainInfo(id);
+		
+		Tower tower = towerService.getTower(main.getTowerId());
+		map.put("data", tower);
+		
+		return map;
+	}
+	
+	/**
+	 * 获取组配件明细表的数据
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "getPartsInfo.action")
+	@ResponseBody
+	public 	Map<String, Object> getPartsInfo(String id) {
+		Map<String, Object> map=new HashMap<String, Object>();
+		Parts parts=partsService.getPartsById(id);
+		if(!ToolsUtil.isEmpty(parts)){
+			map.put("code", "200");
+			map.put("data", parts);
+		}
+		else{
+			map.put("code", "300");
+		}
+		return map;
+	}
+	
+	/**
+	 * 处理data
+	 * @param data
+	 * @return
+	 */
+	public String formatData(Object data){
+		if(ToolsUtil.isEmpty(data)){
+			return "";
+		}
+		return data.toString();
+	}
 
 }

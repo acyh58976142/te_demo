@@ -22,15 +22,6 @@
 <link
 	href="<%=basePath%>assets/css/font-awesome/css/font-awesome.min.css"
 	rel="stylesheet" />
-<link
-	href="<%=basePath%>assets/plugins/datatables/dataTables.bootstrap.css"
-	rel="stylesheet" />
-
-<!-- ZTree css -->
-<link
-	href="<%=basePath%>assets/js/ztree/zTree_v3/css/zTreeStyle/zTreeStyle.css"
-	rel="stylesheet">
-
 <!-- common css -->
 <link href="<%=basePath%>assets/css/common/default.css" rel="stylesheet" />
 <!-- 自定义css -->
@@ -38,6 +29,11 @@
 	rel="stylesheet" />
 <link rel="stylesheet" href="<%=basePath%>assets/js/zcell/ZCell.css">
 <style type="text/css">
+.location{
+    position: absolute!important;
+    right: 5px;
+    top: 63px;
+    }
 </style>
 </head>
 <body>
@@ -46,13 +42,22 @@
 		<li class="active"><a href="#stingConfig" class="activeIdHref"
 			data-toggle="tab">串型配置</a></li>
 		<li><a href="#index" data-toggle="tab" class="activeIdHref"
-			data-toggle="tab">目录(20串)</a></li>
-		<li><a href="#description" class="activeIdHref" data-toggle="tab">套用说明(20串)</a></li>
+			data-toggle="tab">目录</a></li>
+		<li><a href="#description" class="activeIdHref" data-toggle="tab">套用说明</a></li>
 		<li><a href="#info" class="activeIdHref" data-toggle="tab">套图信息表</a></li>
+		<li><a href="#groundStringing" data-toggle="tab" class="activeIdHref" data-toggle="tab">套用修改说明</a></li>
 		<li class="pull-right"><button type="button"
 				class="btn btn-success" id="addBtn">
 				<span class="glyphicon glyphicon-plus"></span>&nbsp;导出
 			</button></li>
+		<li class="pull-right"><button type="button"
+				class="btn btn-primary" id="searchBtn" style="margin-right: 5px;">
+				<span class="glyphicon glyphicon-search"></span>&nbsp;查询
+			</button></li>
+		<li class="pull-right">
+		<select id="mainInfo" class="form-control tab-group-control"></select></li>
+		<li class="pull-right"><span class="form-control tab-group-control tab-addon">工程列表:</span></li>
+			
 	</ul>
 	<div class="container">
 		<div id="myTabContent" class="tab-content">
@@ -69,6 +74,10 @@
 						data-toggle="tab">地线悬垂串</a></li>
 					<li><a href="#dixianNZC" class="activeIdHref"
 						data-toggle="tab">地线耐张串</a></li>
+					<li class="pull-right location"><button type="button"
+						class="btn btn-primary" id="saveBtn" style="margin-right: 5px;">
+						<span class="glyphicon glyphicon-save"></span>&nbsp;保存配置
+					    </button></li>
 				</ul>
 				<div class="tab-content">
 
@@ -157,6 +166,14 @@
 					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
 			</div>
 			<!-- 套图信息表结束 -->
+			
+			<!-- 套用修改说明开始 -->
+			<div class="tab-pane fade" id="groundStringing">
+				<div id="groundStringingContainer"
+					style="border: 1px solid #DDECFE; overflow: hidden;"></div>
+			</div>
+			<!-- 套用修改说明结束 -->
+			
 		</div>
 	</div>
 
@@ -172,23 +189,15 @@
 <script type="text/javascript"
 	src="<%=basePath%>assets/js/layer/layer.js"></script>
 <script type="text/javascript"
-	src="<%=basePath%>assets/plugins/datatables/jquery.dataTables.js"></script>
-<script type="text/javascript"
-	src="<%=basePath%>assets/plugins/datatables/dataTables.bootstrap.js"></script>
-<script type="text/javascript"
-	src="<%=basePath%>assets/js/bootstrap/bootstrap-select.js"></script>
-<script type="text/javascript"
 	src="<%=basePath%>assets/js/zcell/ZCell.register.js"></script>
 <script type="text/javascript"
 	src="<%=basePath%>assets/js/zcell/ZCell.min.js"></script>
 <script type="text/javascript"
+	src="<%=basePath%>assets/js/zcell/ZCell-util.js"></script>
+<script type="text/javascript"
 	src="<%=basePath%>assets/js/common/default.js"></script>
 <script type="text/javascript"
 	src="<%=basePath%>assets/plugins/validate/jquery.metadata.js"></script>
-<script type="text/javascript"
-	src="<%=basePath%>assets/plugins/validate/jquery.validate.min.js"></script>
-<script type="text/javascript"
-	src="<%=basePath%>assets/plugins/validate/jquery.validate.message.cn.js"></script>
 <!-- 自定义js -->
 <script type="text/javascript"
 	src="<%=basePath%>pages/serialConfig/serialConfigTable.js"></script>

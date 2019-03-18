@@ -1,18 +1,23 @@
 package com.hr.td.entity;
 
-import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 力学特征  - 水平张力
  * @author zhh
  *
  */
-public class HorizontalTension implements Serializable{
+@Entity
+@Table(name = "mp_horizontal_tension")
+public class HorizontalTension{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private String id;
 	private double representativeSpan;//代表档距
 	private double minTemperature;//最低气温
 	private double avgTemperature;//平均气温
@@ -29,11 +34,21 @@ public class HorizontalTension implements Serializable{
 	private double threeSpanLine;//三跨地线
 	private double checkingComputations4;//验算4
 	private double checkingComputations5;//验算5
-
+	private int wireTypeTag;	//参数类型 1:导线 2:地线
 	
-	
-	
-	
+	@Id
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public int getWireTypeTag() {
+		return wireTypeTag;
+	}
+	public void setWireTypeTag(int wireTypeTag) {
+		this.wireTypeTag = wireTypeTag;
+	}
 	public double getGroundWire5() {
 		return groundWire5;
 	}
@@ -63,9 +78,6 @@ public class HorizontalTension implements Serializable{
 	}
 	public void setCheckingComputations5(double checkingComputations5) {
 		this.checkingComputations5 = checkingComputations5;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 	public double getRepresentativeSpan() {
 		return representativeSpan;

@@ -41,11 +41,49 @@ tr th {
 	display: none;
 }
 
+.input_control {
+	display: block;
+	width: 100%;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 0px;
+	border-radius: 4px;
+}
 
+/**去掉下拉框背景三角形**/
+select {
+	appearance: none;
+	-webkit-appearance: none;
+	background-color: #92d050!important;
+	color: black!important;
+	border-radius: 0px!important; 
+}
 
+td{
+	padding: 0px!important;
+	vertical-align: middle!important;
+}
 
+.delTr{
+	margin-left: 5px;
+	font-size: 14px;
+	color: red;
+}
+.addTr{
+	font-size: 14px;
+	color: green;
+}
 
-
-
-
-
+input{
+	background-color: #ffff00!important;
+	color: black!important;
+	border-radius: 0px!important; 
+	height: -1%!important; 
+}
+.marginDiv {
+	margin: 5px !important;
+}

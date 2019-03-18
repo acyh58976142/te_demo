@@ -1,0 +1,61 @@
+@CHARSET "UTF-8";
+
+.topDiv {
+	margin-top: 10px;
+}
+
+td {
+	vertical-align: middle;
+	text-align: center;
+	white-space: normal !important;
+	padding: 2px !important;
+}
+.rulercro{
+	width: 30px!important;
+}
+
+#zfstatd {
+	display: none;
+}
+.p_align{
+	text-align: center;
+}
+.font20{
+	font-size:22px;
+}
+.font26{
+	font-size:26px;
+}
+.borderInput{
+	text-align: center;
+	border-bottom:1px solid;
+}
+.widthTitle{
+	width: 450px;
+}
+.isdNumber{
+	border-right: 1px solid;
+	border-bottom:1px solid;
+}
+.tableInput{
+	width:160px;
+}
+.tablecss{
+ /* min-height: 25px;
+ line-height: 25px;  */
+ text-align: center; 
+ /* border-collapse: collapse; */
+ width: 100%;
+}
+.tablecss tr td{
+	 border:1px solid; 
+}
+.width16{
+	border-bottom:1px solid;
+	width: 16px;
+	text-align: center; 
+}
+.textFont{
+	font-weight:bold;
+	width:100%;
+}

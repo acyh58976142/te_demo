@@ -23,7 +23,6 @@
 			<div class="col-lg-12 col-md-12 col-sm-12">
 				<h3>新增工程</h3>
 			</div>
-			<form id="login_Form" method="post">
 				<div class="col-lg-12 col-md-12 col-sm-12 magintop-row">
 					<div class="col-lg-offset-1 col-lg-10">
 						<div class="input-group">
@@ -53,21 +52,27 @@
 						</div>
 					</div>
 				</div> -->
-				
+
 				<div class="col-lg-12 col-md-12 col-sm-12 magintop-row">
 		              <div class="col-md-1 col-xs-1">
 		              </div>
                        <div class="col-md-10 col-xs-10 text-left">
+							<form id="login_Form" enctype="multipart/form-data" onsubmit="return false;">
 							<div id="del_summary_file_div">TA文件&nbsp;&nbsp;:</div>
 							<input name="upload"  id="summary_file_input" type="file" style="display: none;">
 							<button class="btn btn-info"  id="summary_file_btn" type="button">
 								<i class="fa fa-upload"></i>&nbsp;上传
 							</button>
+							</form>
+							<form id="route_Form" enctype="multipart/form-data" onsubmit="return false;">
+							<div id="applyAdd_loadFile">route文件&nbsp;&nbsp;:<span class="text-left applyAdd_file"></span></div>
+							<input name="upload" id="tower_file_input" type="file" style="display: none;">
+							<button class="btn btn-info" id="tower_file_btn" type="button">
+								<i class="fa fa-upload"></i>&nbsp;上传
+							</button>
+							</form>
 						</div>
 				</div>
-			
-			</form>
-
 			<div class="col-lg-12 col-md-12 col-sm-12 magintop-row">
 				<div class="col-lg-offset-1 col-lg-10">
 					<button class='form-control btn btn-info' id='submit'>提交</button>

@@ -23,10 +23,10 @@ public class GeologicalScheduleConfigure {
 	private String eigenvalueCapacity; //承载力特征值
 	private String standardSideResistance;  //桩的极限侧阻力标准值
 	private String standardEndResistance;  //桩的极限端阻力标准值
+	private String stratigraphicState;//地层状态
 	
 	public GeologicalScheduleConfigure() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public GeologicalScheduleConfigure(String iD, String stratigraphicName, String floorDepth,
 			String geotechnicalDescription, String gravityDensity, String cohesion, String internalFrictionAngle,
@@ -103,6 +103,12 @@ public class GeologicalScheduleConfigure {
 	}
 	public void setStandardEndResistance(String standardEndResistance) {
 		this.standardEndResistance = standardEndResistance;
+	}
+	public String getStratigraphicState() {
+		return stratigraphicState;
+	}
+	public void setStratigraphicState(String stratigraphicState) {
+		this.stratigraphicState = stratigraphicState;
 	}
 		
 }

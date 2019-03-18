@@ -11,6 +11,6 @@ import java.util.Map;
 public interface ITowerLoadService {
 	
 	//查询导地线参数
-	public List<Map<String, Object>> getGroundGuideParam();
+	public List<Map<String, Object>> getGroundGuideParam(Map<String, String> param);
 
 }

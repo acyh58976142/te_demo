@@ -33,8 +33,9 @@ public class MechanicsPropertyController {
 	@ResponseBody
 	public Map<String, Object> getInitData(HttpServletRequest request) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		List<Map<String, Object>> wirelist = mechanicsService.groundWireParam();
-		result.put("wirelist", wirelist);
+//		List<Map<String, Object>> wirelist = mechanicsService.groundWireParam();
+		Map<String, Object> entryContition = mechanicsService.getEntryCondition();
+		result.put("entryContition", entryContition);
 		return result;
 	}
 	
@@ -59,11 +60,45 @@ public class MechanicsPropertyController {
 		return result;
 	}
 	/**
+	* @Title: saveResult  
+	* @Description: 保存导线力学计算结果
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/saveResult.action")
+	@ResponseBody
+	public Map<String, Object> saveResult(HttpServletRequest request,@RequestBody Map<String,Object> param) {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String,String> baseParam = (Map<String, String>) param.get("baseParam");
+		Map<String,String> wirewayParam = (Map<String, String>) param.get("wirewayParam");
+		List<Map<String,String>> weatherConditions = (List<Map<String, String>>) param.get("weatherConditions");
+		List<Double> steps = new ArrayList<Double>();
+		List<Object> t =  (List<Object>) param.get("steps");
+		for (int i = 0; i < t.size(); i++) {
+			steps.add(Double.valueOf(t.get(i).toString()));
+		}
+		paramMap = DynamicsFeatures.initLoad(baseParam,wirewayParam,weatherConditions,steps);
+		boolean bool = mechanicsService.updateMechanicsProperty(baseParam,wirewayParam,weatherConditions,paramMap);
+		result.put("result", bool);
+		return result;
+	}
+	/**
 	 * 根据主键获取工程实体
 	 */
 	public MainInfo getMainInfo(String id) {
 		MainInfo main =(MainInfo) baseDao.getEntity(MainInfo.class, id);
 		return main;
 	}
-	
+	/**
+	* @Title: getConductorParam
+	* @Description: 获取导线参数
+	 */
+	@RequestMapping(value = "/getConductorParam.action")
+	@ResponseBody
+	public Map<String, Object> getConductorParam(HttpServletRequest request) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String, Object>> conductorParam = mechanicsService.groundWireParam();
+		result.put("conductorParam", conductorParam);
+		return result;
+	}
 }

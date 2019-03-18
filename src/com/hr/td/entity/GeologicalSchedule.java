@@ -13,8 +13,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="geologicalSchedule")
 public class GeologicalSchedule{
-		private String ID;  //标识
-		private String Mid; //主表id
+		private String id;  //标识
+		private String mid; //主表id
 		private String towerNum;  //杆塔编号
 		private String towerLocation;  //杆塔位置
 		private String explorationBasis;  //勘探依据
@@ -31,18 +31,23 @@ public class GeologicalSchedule{
 		private String surveyPointLocation; //勘探点位置
 		private String waterLevel; //地下水位类型埋深
 		private String remark;  //备注
+		private String resistivity;//电阻率
+		private String stratigraphicState;//地层状态
+		private String projectId;//工程id
+		private String sortno;//杆塔编号排序
+		
 		@Id
-		public String getID() {
-			return ID;
+		public String getId() {
+			return id;
 		}
-		public void setID(String iD) {
-			ID = iD;
+		public void setId(String id) {
+			this.id = id;
 		}
 		public String getMid() {
-			return Mid;
+			return mid;
 		}
 		public void setMid(String mid) {
-			Mid = mid;
+			this.mid = mid;
 		}
 		public String getTowerNum() {
 			return towerNum;
@@ -139,6 +144,30 @@ public class GeologicalSchedule{
 		}
 		public void setRemark(String remark) {
 			this.remark = remark;
+		}
+		public String getResistivity() {
+			return resistivity;
+		}
+		public void setResistivity(String resistivity) {
+			this.resistivity = resistivity;
+		}
+		public String getStratigraphicState() {
+			return stratigraphicState;
+		}
+		public void setStratigraphicState(String stratigraphicState) {
+			this.stratigraphicState = stratigraphicState;
+		}
+		public String getProjectId() {
+			return projectId;
+		}
+		public void setProjectId(String projectId) {
+			this.projectId = projectId;
+		}
+		public String getSortno() {
+			return sortno;
+		}
+		public void setSortno(String sortno) {
+			this.sortno = sortno;
 		}
 				
 		

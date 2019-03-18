@@ -68,6 +68,7 @@ td{
 <script type="text/javascript">
     var path="<%=basePath%>"; 
     var id = '${requestScope.id}'; 
+    var projectCode = '${requestScope.projectCode}'; 
     var angle = '${requestScope.tower.angle_change_list}'; 
     var connect = '${requestScope.tower.connect_change_list}'; 
 </script>

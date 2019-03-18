@@ -37,9 +37,18 @@ tr th {
 	font-size: 10px !important;
 }
 
+.tab-group-control{
+	margin: 5px 5px 0px 0px;
+}
+.tab-addon{
+	background-color: #F2F2F2 !important;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius:0px;
+}
 
-
-
+.cell_editor {
+    margin-top: 50px !important;
+}
 
 
 

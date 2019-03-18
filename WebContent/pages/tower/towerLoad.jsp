@@ -27,6 +27,8 @@
 <title>杆塔荷载</title>
 </head>
 <body>
+    <button class="btn btn-info" id="tower_return" style="margin-top: 0px;top: 10px;  z-index: 99;position: absolute;
+    right: 32px;">返回</button>
 	<div class="container-fluid">
 		<div class="row row_margin10">
 			<ul class="nav nav-tabs nav_top">
@@ -90,7 +92,7 @@
 									</tr>
 									<!--条件4 -->
 									<tr>
-										<td>塔型</td>
+										<td>适用地形条件</td>
 										<td colspan="2"><select class="input_control B50">
 												<option value="1">平丘</option>
 												<option value="2">山地</option>
@@ -110,37 +112,37 @@
 								</thead>
 								<tbody>
 									<!--条件5 -->
-									<tr>
+									<tr style="display: none;">
 										<td rowspan="2">最大垂直档距 Lv(max)</td>
 										<td><input type="text" class="input_control B52"
-											value="680"></td>
+											value=""></td>
 										<td rowspan="2" colspan="2">最小垂直档距 Lv(min)</td>
 										<td><input type="text" class="input_control E52"
-											value="-425"></td>
+											value=""></td>
 									</tr>
-									<tr>
+									<tr  style="display: none;">
 										<td><input type="text" class="input_control B53"
-											value="170"></td>
+											value=""></td>
 										<td><input type="text" class="input_control E53"
-											value="-650"></td>
+											value=""></td>
 									</tr>
-									<tr>
+									<tr  style="display: none;">
 										<td>相应档距 Lh</td>
 										<td><input type="text" class="input_control B54"
-											value="550"></td>
+											value=""></td>
 										<td colspan="2">相应档距 Lh</td>
 										<td><input type="text" class="input_control E54"
-											value="550"></td>
+											value=""></td>
 									</tr>
-									<tr>
+									<tr  style="display: none;">
 										<td>代表档距 Lp</td>
 										<td><input type="text" class="input_control B56"
-											value="200"></td>
+											value=""></td>
 										<td colspan="2">~</td>
 										<td><input type="text" class="input_control E56"
-											value="200"></td>
+											value=""></td>
 									</tr>
-									<tr>
+									<tr  style="display: none;">
 										<td>跳线水平档距 Lht</td>
 										<td><input type="text" class="input_control B57"
 											value="8"></td>
@@ -148,10 +150,10 @@
 										<td><input type="text" class="input_control E57"
 											value="8"></td>
 									</tr>
-									<tr>
+									<tr  style="display: none;">
 										<td>转角度数</td>
 										<td colspan="4"><input type="text"
-											class="input_control B58" value="0"></td>
+											class="input_control B58" value=""></td>
 									</tr>
 									<!--条件6 -->
 									<tr>
@@ -176,7 +178,7 @@
 										<td>代表档距 Lp</td>
 										<td colspan="4"><select class="input_control">
 												<option value="1">拉线塔</option>
-												<option value="2">自立式铁塔</option>
+												<option value="2" selected="selected">自立式铁塔</option>
 										</select></td>
 										<!-- <td colspan="2"><input type="text" class="input_control"
 											value="1"></td> -->
@@ -679,7 +681,7 @@
 				<button class="btn btn-primary" onclick="getcount()">
 					<i class="glyphicon glyphicon-search"></i>&nbsp;计算
 				</button>
-				<button class="btn btn-warning">
+				<button class="btn btn-warning" onclick="exportToExcel()">
 					<i class="glyphicon glyphicon-level-up"></i>&nbsp;导出excel
 				</button>
 			</div>
@@ -1551,6 +1553,137 @@
 				</div>
 			</div>
 		</div>
+		
+		<!-- 导出的excel -->
+		<div class="row" style="display:none;">
+		   <!-- 风力荷载 -->
+		    <table id="A_WindLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    <table id="B_WindLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    
+		    <!-- 重力荷载 -->		    
+		    <table id="A_GravityLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    <table id="B_GravityLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    
+		    <!-- 张力 -->
+		    <table id="A_TensionLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    <table id="B_TensionLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>大风</th>
+		           <th>低温</th>
+		           <th>覆冰</th>
+		           <th>安装</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>长期</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    
+		    <!--不平衡张力 -->
+		    <table id="A_NBalanceTensionLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th><备注/th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		    <table id="B_NBalanceTensionLoad_table" style="border: 1px solid grey;">
+		      <thead>
+		        <tr>
+		           <th>挂点名称</th>
+		           <th>断线</th>
+		           <th>不均匀覆冰</th>
+		           <th>备注</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        </tbody>
+		    </table>
+		</div>
 
 		<script type="text/javascript"
 			src="<%=basePath%>assets/plugins/jQuery/jquery-1.11.3.min.js"></script>
@@ -1564,25 +1697,30 @@
 			src="<%=basePath%>assets/plugins/datatables/dataTables.bootstrap.js"></script>
 		<script type="text/javascript"
 			src="<%=basePath%>assets/js/common/default.js"></script>
+		<!-- 自定义js -->
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/towerLoad.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad_Variable.js"></script>
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/publicVariable.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad.js"></script>		
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/towerGuideWireParameter.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad_Parameter.js"></script>
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/calculHorizontalTension.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad_Tension.js"></script>
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/eachStateVertical.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad_Vertical.js"></script>
 		<script type="text/javascript"
-			src="<%=basePath%>pages/tower/horizontalLoadCalcu.js"></script>
+			src="<%=basePath%>pages/tower/towerLoad_Calcu.js"></script>
 		<script type="text/javascript"
 			src="<%=basePath%>pages/tower/towerLoadCount.js"></script>
 		<script type="text/javascript"
 			src="<%=basePath%>pages/tower/towerLoadCountResult.js"></script>
+		<script type="text/javascript"
+			src="<%=basePath%>pages/tower/towerLoadExport.js"></script>
 		<script type="text/javascript">
 			  var path="<%=basePath%>";
-			var towerLoad = new TowerLoad();
+			  var projectId="${requestScope.projectId}";//工程id
+			  var mergeId="${requestScope.mergeId}";  //归并的杆塔信息的id
+			  var towerLoad = new TowerLoad();
 		</script>
 </body>
 </html>

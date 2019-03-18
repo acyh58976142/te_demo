@@ -6,7 +6,7 @@ $(document).ready(function() {
 
 	$.ajax({
 		type : 'post',
-		url : path + 'Tower/getTaDataById.action',
+		url : path + 'Tower/getTaDataByIdceshi.action',
 		data : {
 			'id' : id,
 			'pagingSize' : pagingSize
@@ -20,7 +20,7 @@ $(document).ready(function() {
 				// 创建JSCELL，指明承载容器
 				zcell1 = new ZCell(document.getElementById("cellContainer"));
 				// 创建表，并指定列，行数
-				zcell1.InserSheet(0, 15, list.length);
+				zcell1.InserSheet(0, 14, list.length);
 
 				// 加载数据
 				zcell1.GetSheet(0).LoadArrData(list);
@@ -41,7 +41,16 @@ $(document).ready(function() {
 			setpagingStyle(data);
 			// 设置样式	
 			setStyle(list);
-			initCoverTable();
+			//initCoverTable();
+			var table = document.getElementById("tabl1");
+			 var len = table.rows.length; 
+			for (var i = 1; i <= 14; i++) {
+				for (var j = 1; j <= len; j++) {
+					zcell1.GetSheet(0).SetCellStyle(i, j, {
+						"border" : "1px solid black"
+					});
+				}
+			}
 		},
 		error : function() {
 			Tools.tipsMsg("查询失败");
@@ -61,7 +70,8 @@ function setcolw(list) {
 	zcell1.GetSheet(0).SetColWidth(7, 62);
 	zcell1.GetSheet(0).SetColWidth(9, 62);
 	zcell1.GetSheet(0).SetColWidth(10, 62);
-	zcell1.GetSheet(0).SetColWidth(14, 150);
+	zcell1.GetSheet(0).SetColWidth(11, 150);
+	zcell1.GetSheet(0).SetColWidth(13, 300);
 }
 
 //设置分页样式
@@ -71,16 +81,17 @@ function setpagingStyle(data) {
 	 var title = data.list[0][0];//标题
 	for (var i = 1; i <=size; i++) {
 		zcell1.GetSheet(0).MergeCells(1, pagingSize*i-1, 1, pagingSize*i);
-		zcell1.GetSheet(0).MergeCells(2, pagingSize*i-1, 11, pagingSize*i);
-		zcell1.GetSheet(0).MergeCells(12, pagingSize*i-1, 12, pagingSize*i);
+		zcell1.GetSheet(0).MergeCells(2, pagingSize*i-1, 10, pagingSize*i);
+		zcell1.GetSheet(0).MergeCells(11, pagingSize*i-1, 11, pagingSize*i);
 		zcell1.GetSheet(0).SetCellStyle(2,  pagingSize*i-1, {
 			"background-color" : "#ffff00"
 		});
 		zcell1.GetSheet(0).SetCellValue(1, pagingSize*i-1,"备注");
-		zcell1.GetSheet(0).SetCellValue(12, pagingSize*i-1,"第"+i+"页/共"+size+"页");
-		zcell1.GetSheet(0).SetCellValue(13, pagingSize*i-1,"图  号");
-		zcell1.GetSheet(0).SetCellValue(14, pagingSize*i-1,"图纸级别");
-		zcell1.GetSheet(0).SetCellValue(14, pagingSize*i,drawingLevel);
+		zcell1.GetSheet(0).SetCellValue(11, pagingSize*i-1,"第"+i+"页/共"+size+"页");
+		zcell1.GetSheet(0).SetCellValue(12, pagingSize*i-1,"图  号");
+		zcell1.GetSheet(0).SetCellValue(12, pagingSize*i,projectCode+"-D0102");
+		zcell1.GetSheet(0).SetCellValue(13, pagingSize*i-1,"图纸级别");
+		zcell1.GetSheet(0).SetCellValue(13, pagingSize*i,drawingLevel);
 	}
 	
 for (var i = 0; i <size; i++) {
@@ -98,7 +109,7 @@ for (var i = 0; i <size; i++) {
 	zcell1.GetSheet(0).SetCellValue(12,pagingSize*i+1,title[11]);
 	zcell1.GetSheet(0).SetCellValue(13,pagingSize*i+1,title[12]);
 	zcell1.GetSheet(0).SetCellValue(14,pagingSize*i+1,title[13]);
-	zcell1.GetSheet(0).SetCellValue(15,pagingSize*i+1,title[14]);
+	
 }
 }
 
@@ -182,7 +193,7 @@ function merge(length) {
 		zcell1.GetSheet(0).MergeCells(8, i , 8, i  + 1);
 		
 		zcell1.GetSheet(0).MergeCells(11, i , 11, i  + 1);
-		zcell1.GetSheet(0).MergeCells(12, i , 12, i + 1);
+		
 		}
 	}
 	
@@ -193,7 +204,7 @@ function merge(length) {
 		zcell1.GetSheet(0).MergeCells(5, i+1, 5, i + 2);
 		zcell1.GetSheet(0).MergeCells(13, i+1, 13, i + 2);
 		zcell1.GetSheet(0).MergeCells(14, i+1, 14, i + 2);
-		zcell1.GetSheet(0).MergeCells(15, i+1, 15, i + 2);
+		zcell1.GetSheet(0).MergeCells(12, i+1, 12, i + 2);
 		}
 	}
 	
@@ -204,7 +215,7 @@ function setStyle(list) {
 	var datastr = zcell1.GetSheet(0).GetDataArr();
 	for (var i = 1; i <datastr.length; i++) {
 		if(datastr[i][0].length>3&&datastr[i][0].substring(0, 2)=="备注"){
-			zcell1.GetSheet(0).SetCellValue(1,i,datastr[i][0].substring(2));
+			zcell1.GetSheet(0).SetCellValue(1,i+1,datastr[i][0].substring(2));
 			if(datastr[i][0]==datastr[i+1][0]){
 				var  val61 = zcell1.GetSheet(0).GetCellValue(6,i+2);
 				var  val71 = zcell1.GetSheet(0).GetCellValue(7,i+2);
@@ -242,10 +253,10 @@ function setStyle(list) {
 			"background-color" : "#92d050"
 		});
 		zcell1.GetSheet(0).SetCellStyle(12, i, {
-			"background-color" : "#ffff00"
+			"background-color" : "#92d050"
 		});
 		zcell1.GetSheet(0).SetCellStyle(13, i, {
-			"background-color" : "#92d050"
+			"background-color" : "#ffff00"
 		});
 		zcell1.GetSheet(0).SetCellStyle(14, i, {
 			"background-color" : "#ffff00"
@@ -257,41 +268,72 @@ function setStyle(list) {
 	            "object":"<div class='1'></div>"
 	        };
 	    
-		var angle1 = zcell1.GetSheet(0).GetCellValue(11,i);
+var angle1 = zcell1.GetSheet(0).GetCellValue(11,i);
+		
+		var shangdan = zcell1.GetSheet(0).GetCellValue(9,i-1);
+		var xiadan = zcell1.GetSheet(0).GetCellValue(9,i);
+		
+		if(isNumber(shangdan)&&isNumber(xiadan)){
+		if(parseFloat(shangdan)!=parseFloat(xiadan)&&Tools.isEmpty(angle1)){
+			 zcell1.GetSheet(0).SetCellValue(11,i, '见分支示意图');
+			 angle1 = "见分支示意图";
+			 zcell1.GetSheet(0).SetCellStyle(11, i-1, {
+					"background-color" : "red"
+				});
+		}
+		}
 		if(!Tools.isEmpty(angle1)){
 			var drop1 = {
 	                "code": "dropdown",
 	                "source":{'001':angle1,'002':'见分支示意图'}
 	            };
 	         zcell1.GetSheet(0).SetCellType(11, i, drop1);	
+	         if(i!=1&&(i-2)%pagingSize!=0&&!Tools.isEmpty(zcell1.GetSheet(0).GetCellValue(11,i-1))){
+	          	  if(angle1=="见分支示意图"){
+	          		 zcell1.GetSheet(0).SetCellValue(11,i, "002");
+	          	  }else{
+	          		 zcell1.GetSheet(0).SetCellValue(11,i-1, "001");
+	          	  }
+	           }
 		}
 		
 		var drop2 = {
                 "code": "dropdown",
                 "source":{'':'','不得接头':'不得接头'}
             };
-         zcell1.GetSheet(0).SetCellType(13, i, drop2);
+         zcell1.GetSheet(0).SetCellType(12, i, drop2);
+         if(!Tools.isEmpty(connect)){
          var con = datastr[i-1][0]+datastr[i-1][1];
 			var connectlist = JSON.parse(connect);
 			if(connectlist.indexOf(con) > -1){
-				zcell1.GetSheet(0).SetCellValue(13,i-1,"不得接头");
-				zcell1.GetSheet(0).SetCellStyle(13, i, {
+				zcell1.GetSheet(0).SetCellValue(12,i-1,"不得接头");
+				zcell1.GetSheet(0).SetCellStyle(12, i, {
 					"background-color" : "red"
 				});
-			}		
+			}	
+         }
 		}	
 	}
 	var datastr = zcell1.GetSheet(0).GetDataArr();
 	for (var i = 1; i <datastr.length; i++) {
 		if(i!=1&&i%pagingSize!=0&&(i-1)%pagingSize!=0&&(i+1)%pagingSize!=0)
 		{
+			var angle1 = zcell1.GetSheet(0).GetCellValue(11,i);
+			  if(angle1=='002'){
+				  zcell1.GetSheet(0).SetCellStyle(11, i, {
+						"background-color" : "red"
+					});
+			  }
+			  
 			var ang = datastr[i-1][0]+datastr[i-1][1];
-			var anglelist = JSON.parse(angle);
+			if(!Tools.isEmpty(angle)){
+			var anglelist = JSON.parse(angle);	
 			if(anglelist.indexOf(ang) > -1){
 				zcell1.GetSheet(0).SetCellValue(11,i,"002");
 				zcell1.GetSheet(0).SetCellStyle(11, i, {
 					"background-color" : "red"
 				});
+			}
 			}else if(!Tools.isEmpty(zcell1.GetSheet(0).GetCellValue(11,i))){
 				zcell1.GetSheet(0).SetCellValue(11,i,"001");
 			}
@@ -327,34 +369,11 @@ function setStyle(list) {
 		zcell1.GetSheet(0).SetCellReadOnly(8, i, 1);
 		zcell1.GetSheet(0).SetCellReadOnly(9, i, 1);
 		zcell1.GetSheet(0).SetCellReadOnly(10, i, 1);
-		zcell1.GetSheet(0).SetCellReadOnly(12, i, 1);
-		zcell1.GetSheet(0).SetCellReadOnly(14, i, 1);
+		zcell1.GetSheet(0).SetCellReadOnly(13, i, 1);
 
 	}
 }
 
-/* 初始化封面
-*/
-function initCoverTable(){
-
-	$.ajax({
-		type : 'post',
-		url : path + 'Tower/getMainById.action',
-		data : {
-			'id' : id
-	},
-		success : function(data) {
-			if(!Tools.isEmpty(data.code)&&data.code.indexOf("-")>0){
-				for (var i = 1; i <=size; i++) {
-					zcell1.GetSheet(0).SetCellValue(13, pagingSize*i, data.code.substring(data.code.indexOf("-")+1));
-				}	
-			}
-		},
-		error : function() {
-			Tools.tipsMsg("查询失败");
-		}
-	});
-}
 /* 导出
 */
 function JSONToExcelConvertor() {
@@ -420,18 +439,9 @@ function JSONToExcelConvertor() {
 						"width" : "120px"
 					});
 					zcell1.GetSheet(0).SetCellStyle(13, 1, {
-						"width" : "120px"
-					});
-					zcell1.GetSheet(0).SetCellStyle(14, 1, {
 						"width" : "380px"
 					});
-					for (var i = 1; i <= 15; i++) {
-						for (var j = 1; j <= len; j++) {
-							zcell1.GetSheet(0).SetCellStyle(i, j, {
-								"border" : "1px solid black"
-							});
-						}
-					}
+					
 					var timestamp = Date.parse(new Date());
 					exportExcel("tabl1",timestamp);
 					window.location.reload();
@@ -517,9 +527,8 @@ function getParams(){
 		var str11 = datastr[i][11];
 		var str12 = datastr[i][12];
 		var str13 = datastr[i][13];
-		var str14 = datastr[i][14];
 
-		obj = [str11,str12,str13,str14,str10];//接地装置型式
+		obj = [str11,str12,str13,str10];//接地装置型式
 		
 		list.push(obj);
 			
@@ -553,8 +562,8 @@ function getConnectParams(){
 	var datastr = zcell1.GetSheet(0).GetDataArr();
 	for(var i=1;i<datastr.length;i++){
 		var obj = new Object;
-		var str12 = datastr[i][12];
-		if(str12=='不得接头'&&datastr[i-1][12]=='不得接头'&&datastr[i][0]!=datastr[i-1][0]){
+		var str11 = datastr[i][11];
+		if(str11=='不得接头'&&datastr[i-1][11]=='不得接头'&&datastr[i][0]!=datastr[i-1][0]){
 			obj=datastr[i][0]+datastr[i][1];
 			list.push(obj);
 		}	
@@ -598,10 +607,9 @@ function getCountParams(){
 		list11.push(datastr[i][11])
 		list12.push(datastr[i][12])
 		list13.push(datastr[i][13])
-		list14.push(datastr[i][14])
-			
+		
 	}
-	list = [list0,list1,list2,list3,list4,list5,list6,list7,list8,list9,list10,list11,list12,list13,list14]
+	list = [list0,list1,list2,list3,list4,list5,list6,list7,list8,list9,list10,list11,list12,list13]
 	data = JSON.stringify(list);
 	return data;
 
@@ -643,3 +651,17 @@ function filingUpload(){
 function backUpPage() {	
 	location.href = path+ "/Tower/projectList.action";
 };
+/**
+* 校验只要是数字（包含正负整数，0以及正负浮点数）就返回true
+**/
+function isNumber(val){
+
+    var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+    var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+    if(regPos.test(val) || regNeg.test(val)){
+        return true;
+    }else{
+        return false;
+    }
+
+}

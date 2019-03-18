@@ -40,7 +40,16 @@ $(document).ready(function() {
 			setpagingStyle(data);
 			// 设置样式	
 			setStyle(list);
-			initCoverTable();
+			//initCoverTable();
+			var table = document.getElementById("tabl1");
+			 var len = table.rows.length; 
+			for (var i = 1; i <= 14; i++) {
+				for (var j = 1; j <= len; j++) {
+					zcell1.GetSheet(0).SetCellStyle(i, j, {
+						"border" : "1px solid black"
+					});
+				}
+			}
 		},
 		error : function() {
 			Tools.tipsMsg("查询失败");
@@ -201,7 +210,7 @@ function setStyle(list) {
 	var datastr = zcell1.GetSheet(0).GetDataArr();
 	for (var i = 1; i <datastr.length; i++) {
 		if(datastr[i][0].length>3&&datastr[i][0].substring(0, 2)=="备注"){
-			zcell1.GetSheet(0).SetCellValue(1,i,datastr[i][0].substring(2));
+			zcell1.GetSheet(0).SetCellValue(1,i+1,datastr[i][0].substring(2));
 			if(datastr[i][0]==datastr[i+1][0]){
 				var  val61 = zcell1.GetSheet(0).GetCellValue(6,i+2);
 				var  val71 = zcell1.GetSheet(0).GetCellValue(7,i+2);
@@ -236,7 +245,7 @@ function setStyle(list) {
 			"background-color" : "#da9694"
 		});
 		zcell1.GetSheet(0).SetCellStyle(11, i, {
-			"background-color" : "#92d050"
+			"background-color" : "#ffff00"
 		});
 		zcell1.GetSheet(0).SetCellStyle(12, i, {
 			"background-color" : "#ffff00"
@@ -436,13 +445,7 @@ function JSONToExcelConvertor() {
 					zcell1.GetSheet(0).SetCellStyle(14, 1, {
 						"width" : "380px"
 					});
-					for (var i = 1; i <= 15; i++) {
-						for (var j = 1; j <= len; j++) {
-							zcell1.GetSheet(0).SetCellStyle(i, j, {
-								"border" : "1px solid black"
-							});
-						}
-					}
+				
 					var timestamp = Date.parse(new Date());
 					exportExcel("tabl1",timestamp);
 					window.location.reload();

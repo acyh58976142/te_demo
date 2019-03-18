@@ -786,34 +786,108 @@ public class ToolsUtil {
 	 * 
 	 */
     public static double Angle(Point pointA, Point pointB, Point pointC)  
-    {  
-        double PI = 3.1415926535897  ;  
-      
-        double AB_x = pointA.getX() - pointB.getX();  
-        double AB_y = pointA.getY() - pointB.getY();  
-        double CB_x = pointC.getX() - pointB.getX();  
-        double CB_y = pointC.getY() - pointB.getY();  
-        double v = (AB_x * CB_x) + (AB_y * CB_y);  
-        double AB_v = Math.sqrt(AB_x * AB_x + AB_y * AB_y);  //开方
-        double CB_v = Math.sqrt(CB_x * CB_x + CB_y * CB_y);  //开方
-        double cosABC = v / (AB_v * CB_v);  
-        double angleABC = Math.acos(cosABC) * 180 / PI;  
-       
-        BigDecimal angle = new BigDecimal(angleABC-180);
-
-        double  angleNum= angle.setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
-      
-        return angleNum;  
-    } 
+    { 
+     double PI = 3.1415926535897  ;
+	 double AB_x = pointB.getX() - pointA.getX();
+	 double AB_y = pointB.getY() - pointA.getY();
+	 double BC_x = pointC.getX() - pointB.getX();
+	 double BC_y = pointC.getY() - pointB.getY(); 
+	 
+	 double tanAB =  AB_y/ AB_x; 
+	 double tanCB =  BC_y/BC_x;
+	 double angleAB = Math.atan(tanAB)*180/PI;
+	 double angleCB = Math.atan(tanCB)*180/PI;
+	 if ((AB_y< 0) & (AB_x < 0 ))
+		 angleAB = angleAB +180;
+	 else if((AB_y> 0) & (AB_x < 0 ))
+		 angleAB = angleAB +180;
+		 
+	 if ((BC_y< 0) & (BC_x < 0 ))
+		 angleCB = angleCB +180;
+	 else if((BC_y> 0) & (BC_x < 0 ))
+		 angleCB = angleCB +180;
+	 double angleABC = angleCB - angleAB ;
+	 
+	 return angleABC;
+} 
     
-//    public static void main(String args[]) { 
-//    	
-//    	Point pointA = new Point(2287.9603,1263.1231);
-//    	Point pointB = new Point(2410.7946,1263.1231);
-//    	Point pointC = new Point(2559.4887,1676.356);
-//    	double angleABC=Angle(pointA,pointB,pointC);
-//    	
-//    	System.out.println(angleABC); 
-//    } 
-
+    public static void main(String args[]) { 
+    	
+    	Point pointC = new Point(493168.005,3635743.154);
+    	Point pointA = new Point(493177.772,3634927.566);
+    	Point pointB = new Point(493015.941,3634972.66);
+    	double angleABC=Angle(pointA,pointB,pointC);
+    	
+    	System.out.println(angleABC); 
+   } 
+   
+	// @描述：是否是2003的excel，返回true是2003 
+    public static boolean isExcel2003(String filePath)  {  
+         return filePath.matches("^.+\\.(?i)(xls)$");  
+     }  
+   
+    //@描述：是否是2007的excel，返回true是2007 
+    public static boolean isExcel2007(String filePath)  {  
+         return filePath.matches("^.+\\.(?i)(xlsx)$");  
+     } 
+    
+    /**
+	 * 通过导线架线位置和转角角度获得跳线架线数量
+	 * angle 转角角度
+	 * position 架线位置
+	 */
+    public static int getCountByAngleAndPosition(double angle,String position,double minAngle,double maxAngle){ 
+    	int count = 0;//跳线架线数量
+    	int G;//转角方向  左-1，右1
+    	int Z;//导线方向
+    	if(angle>0){
+    		G=-1;
+    	}else{
+    		G=1;
+    	}
+    	if(!isEmpty(position)){
+    		String last = position.substring(position.length()-1,position.length());
+    		if(last.equals("左")||last.equals("右")){
+    			if(last.equals("左")){
+    				Z =-1;
+    			}else{
+    				Z =1;
+    			}
+    			double  newAngle =-(G*Z*Math.abs(angle));
+    			if(newAngle>-90&&newAngle<-minAngle){
+    				count=0;
+    			}
+    			else if(newAngle>-minAngle&&newAngle<minAngle){
+    				count=3;
+    			}
+    			else if(newAngle>minAngle&&newAngle<maxAngle){
+    				count=0;
+    			}
+    			else if(newAngle>maxAngle&&newAngle<90){
+    				count=3;
+    			}
+    		}
+    		else{
+    			Z =1;
+    			double  newAngle =-(G*Z*Math.abs(angle));
+    			if(newAngle>-90&&newAngle<-maxAngle){
+    				count=2;
+    			}
+    			else if(newAngle>-maxAngle&&newAngle<-minAngle){
+    				count=1;
+    			}
+    			else if(newAngle>-minAngle&&newAngle<minAngle){
+    				count=2;
+    			}
+    			else if(newAngle>minAngle&&newAngle<maxAngle){
+    				count=1;
+    			}
+    			else if(newAngle>maxAngle&&newAngle<90){
+    				count=2;
+    			}
+    		}
+    	}
+    
+         return count;  
+     } 
 }

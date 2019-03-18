@@ -38,6 +38,9 @@
 					<button class="btn btn-info" id="apply-update">
 						<i class="fa fa-paste"></i>&nbsp;&nbsp;校&nbsp;核
 					</button>
+					<button class="btn btn-danger" id="drl_btnExplain">
+							<i class="fa fa-file-excel-o"></i>&nbsp;&nbsp;说&nbsp;明
+					</button>
 				<%-- 	</c:if> --%>
 			</div>
 			</div>

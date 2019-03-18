@@ -2,17 +2,66 @@
  *  杆塔js 
  */
 function TowerLoad(){
+	//获取归并的杆塔信息
+	initTowerMergeData();
+	
 	//初始化杆塔型号下拉框
 	this.getGroundParam();
+//	this.getGroundParamNew();
 	
 	this.Inspiece();
 	this.weather_change("weather_v");
 	this.weather_change("weather_T");
 	this.weather_change("weather_C");
+	
+	//返回按钮
+	$("#tower_return").on("click",function(){
+		location.href=path+"merge/turnToTowerMerge.action?projectId="+projectId;
+	})
 }
 
 //导线型号选择框全局变量
 var selectHtml="";
+var groundSelectHtml="";
+var conductor_type="";//导线型号
+/**
+ * 查询杆塔相关信息
+ * @returns
+ */
+function initTowerMergeData(){
+	$.ajax({
+        type: "post",//请求方式
+        url: path+"/merge/getTowerMergeInfo.action",
+        data:{ 
+       	 mergeId:mergeId,
+        },
+　　　       success:function(data){
+　　　    	   if(data!=null){
+　　　    		   　	 $(".B52").val(data.g_max);
+　　　    		   　	 $(".E52").val(data.g_min);
+　　　    		   　	 $(".B53").val(data.f_max);
+　　　    		     $(".E53").val(data.f_min);
+　　　    		   　	 $(".B54").val(data.f_max);
+　　　    		   　	 $(".E54").val(data.f_min);
+　　　    		   　	 $(".B56").val(data.j_max);
+　　　    		   　	 $(".E56").val(data.j_min);
+　　　    		   　      $(".B57").val(data.jumper_f);
+　　　    		   　	 $(".E57").val(data.jumper_g);
+　　　    		   　	 $(".B58").val(data.k_angle);
+　　　    		   　	 if(data.k_angle=="0"){
+　　　    		   　		 $(".C50").val("1");
+　　　    		   　	 }else{
+　　　    		   　	 $(".C50").val("2"); 
+　　　    		   　	 }
+　　　    		   　	 conductor_type=data.conductor_type;
+　　　    		   　	 $(".con_type").val(conductor_type);
+　　　    	   }
+        },
+       error:function(){
+       	Tools.alertMsg("服务器错误");
+        }
+  });
+}
 
 /**
  * 获取导地线参数
@@ -24,7 +73,7 @@ TowerLoad.prototype.getGroundParam=function(){
 		success:function(data){
 			if(data.code=="200"){
 				var list=data.data;
-				selectHtml=$("<select class='input_control'>");
+				selectHtml=$("<select class='input_control con_type'>");
 				for(var i = 0; i < list.length; i++) {
 					var sensor = list[i];
 					var option=$("<option>").data(sensor);
@@ -44,6 +93,41 @@ TowerLoad.prototype.getGroundParam=function(){
 	})
 }
 
+/**
+ * 获取导地线参数
+ */
+TowerLoad.prototype.getGroundParamNew=function(){
+	$.ajax({
+		type:"POST",
+		url:path+"Parts/getWireTypeById.action",
+		data:{
+			id:projectId
+		},
+		success:function(data){
+				var list=data.wireList;
+				var groundList=data.groundList;
+				selectHtml=$("<select class='input_control con_type'>");
+				groundSelectHtml=$("<select class='input_control con_type_g'>");
+				for(var i = 0; i < list.length; i++) {
+					var sensor = list[i];
+					var option=$("<option>").val(sensor).text(sensor);	
+					    selectHtml.append(option);
+				}
+				for(var i = 0; i < list.length; i++) {
+					var sensor = list[i];
+					var option=$("<option>").val(sensor).text(sensor);	
+					groundSelectHtml.append(option);
+				}
+				$(".conductorType").html(selectHtml);
+				$(".conductorType_g").html(groundSelectHtml);
+
+		},
+		error:function(){
+			alert("系统错误");
+		}
+	})
+}
+
 
 /**
  * 绝缘子表格添加监听事件（计算公式）
@@ -56,7 +140,7 @@ TowerLoad.prototype.Inspiece=function(){
         var row_num = target.parentNode.parentNode.rowIndex;
         var col_num = target.parentNode.cellIndex;
 		var num1=$(this).val();
-		if(!isEmpty(num1)){
+		if(isEmpty(num1)){
 			return;
 		}
         var rows1;
@@ -70,7 +154,7 @@ TowerLoad.prototype.Inspiece=function(){
         	rows2=row_num;
         }
         var num2=$(this).parent().parent().parent().find("tr:eq("+rows1+")").find("td:eq("+col_num+")").find("input").val();
-        if(isEmpty(num2)){
+        if(!isEmpty(num2)){
         	var postNum=towerLoad.calculateInspiece(num1,num2,col_num);
         	$(this).parent().parent().parent().find("tr:eq("+rows2+")").find("td:eq("+col_num+")").find("input").val(postNum);
         }
@@ -85,7 +169,7 @@ TowerLoad.prototype.Inspiece=function(){
  */
 TowerLoad.prototype.calculateInspiece=function(inspiece,linkNum,data){
 	var postNum=0;
-	if(isEmpty(inspiece)&&isEmpty(linkNum)){
+	if(!isEmpty(inspiece)&&!isEmpty(linkNum)){
 		//折算后
 	    postNum=Number(inspiece)*Number(linkNum);
 		//导线
@@ -111,7 +195,7 @@ TowerLoad.prototype.weather_change=function(className){
         var row_num = target.parentNode.parentNode.rowIndex;
         var col_num = target.parentNode.cellIndex;
 		var numV=$(this).val();
-		if(!isEmpty(numV)){
+		if(isEmpty(numV)){
 			return;
 		}
         if(col_num==1){//覆冰验算
@@ -169,4 +253,16 @@ TowerLoad.prototype.gettrim_mod=function(data){
 	return 1.3;
 }
 
-//高空风压系数Kz(前侧)
+/**
+ * 判断字段的非空
+ * @param data
+ * @returns
+ */
+function isEmpty(data){
+	if(data==""||data==null||data==undefined){
+		return true;
+	}
+	else{
+		return false;
+	}
+}

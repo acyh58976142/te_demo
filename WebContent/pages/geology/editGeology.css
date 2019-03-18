@@ -1,38 +1,74 @@
 @CHARSET "UTF-8";
-.text_underline{
-	text-align:center;
-	text-decoration:underline;
+
+.text_underline {
+	text-align: center;
+	text-decoration: underline;
 }
-/* tr{
-	border:1px solid #000!important;
+
+#print_div table {
+	border-collapse: collapse;
+	margin: auto;
 }
-th{
-	vertical-align: middle!important;
-	border:1px solid #000!important;
-	padding: 5px!important;
-    line-height: 1.42857143;
-    font-weight: bold !important;
+
+#print_div  tr {
+	/* 	border:1px solid #000; */
+	
 }
-td{ 
-	text-align:center;
-	border:1px solid #000!important;
+
+#print_div  th {
+	vertical-align: middle;
+	border: 1px solid #000;
+	/* padding: 0px; */
+	line-height: 1.42857143;
+	font-weight: bold;
 }
-.row {
-    margin-right: 15px;
-    margin-left: 15px;
+
+#print_div  td {
+	text-align: center;
+	border: 1px solid #000;
 }
-.inputText{
-	border:0;
+
+.inputText {
+	border: 0;
 	outline: none;
 	width: 100%;
 	text-align: center;
 }
-select{
-	border:0;
-	outline: none;
+
+select {
 	text-align: center;
-    text-align-last: center;
-} */
-.active{
+	text-align-last: center;
+	-webkit-appearance: none;
+	border: 0;
+}
+
+.active {
 	background-color: #e5e5e5;
+}
+
+#export_div table {
+	border-collapse: collapse;
+	margin: auto;
+}
+
+#export_div  tr {
+	/* 	border:1px solid #000; */
+	
+}
+
+#export_div  th {
+	vertical-align: middle;
+	border: 1px solid #000;
+	/* padding: 0px; */
+	line-height: 1.42857143;
+	font-weight: bold;
+}
+
+#export_div  td {
+	text-align: center;
+	border: 1px solid #000;
+}
+
+#export_div {
+	display:none;
 }

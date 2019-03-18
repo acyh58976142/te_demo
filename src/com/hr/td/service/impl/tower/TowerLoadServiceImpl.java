@@ -27,11 +27,21 @@ public class TowerLoadServiceImpl implements ITowerLoadService{
 	 * 查询导地线参数
 	 */
 	@Override
-	public List<Map<String, Object>> getGroundGuideParam() {
+	public List<Map<String, Object>> getGroundGuideParam(Map<String, String> param) {
 		StringBuilder builder=new StringBuilder();
 		builder.append(" select ground_id,conductor_type,cross_section_area,diameter,breaking_force,unit_weight,modulus_elasticity,tem_exp_coefficient ");
 		builder.append(" from ground_guide_param where 1=1 ");
-		List list=baseDao.getHibernateDAO().queryByNativeSql(builder.toString(), null);
+		List<String> lists=new ArrayList<>();
+		String str="";
+		if(!ToolsUtil.isEmpty(str=param.get("id"))){
+			builder.append(" and id=? ");
+			lists.add(param.get("id"));
+		}
+		if(!ToolsUtil.isEmpty(str=param.get("conductor_type"))){
+			builder.append(" and conductor_type=? ");
+			lists.add(param.get("conductor_type"));
+		}
+		List list=baseDao.getHibernateDAO().queryByNativeSql(builder.toString(), lists.toArray());
 		List<Map<String, Object>> paramList=new ArrayList<Map<String, Object>>();
 		if(!ToolsUtil.isEmpty(list)){
 			for(int i=0;i<list.size();i++){

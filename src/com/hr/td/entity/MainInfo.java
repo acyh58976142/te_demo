@@ -19,10 +19,12 @@ public class MainInfo{
 	private String id;     //主键ID，32位UUID大写
 	private int stageId;// 项目阶段ID
 	private String towerId;// 杆塔ID
+	private String wireConfigId;// 组配件配置ID
 	private String projectName; //工程名称
 	private String projectCode;   //工程编号
 	private String designUnit; 
 	private Date designDate;  //时间
+	
 	
 	/****主键ID*****/
 	@Id
@@ -67,6 +69,12 @@ public class MainInfo{
 	}
 	public void setTowerId(String towerId) {
 		this.towerId = towerId;
+	}
+	public String getWireConfigId() {
+		return wireConfigId;
+	}
+	public void setWireConfigId(String wireConfigId) {
+		this.wireConfigId = wireConfigId;
 	}  
 
 }

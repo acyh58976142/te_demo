@@ -12,18 +12,64 @@ var Zcell6 = null;
 var Zcell4 = null;
 /*导地线参数*/
 var Wirelist = null;
+/*已激活的标签页的名称*/
+var ActiveTab = "导线计算书";
 function wireProperty() {
-	// 初始化数据
-	this.initData();
 	// 初始化表格
 	this.initCellTableData();
+	// 初始化数据
+	this.initData();
 	$('#addBtn').on("click",function() {
-		exportExcel("tabl1","力学特性与架线弧垂","导线力学特性表");
+		let tableHtml = '';
+		let tableObj = null;
+		if (ActiveTab == "导线计算书") {
+			tableObj = document.getElementById("wireComputeBookContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#wireComputeBookContainer #tabl1").html();
+		} else if (ActiveTab == "导线力学特性表") {
+			tableObj = document.getElementById("wirePropertyContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#wirePropertyContainer #tabl1").html();
+		} else if (ActiveTab == "导线架线表") {
+			tableObj = document.getElementById("wireStringingContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#wireStringingContainer #tabl1").html();
+		} else if (ActiveTab == "地线计算书") {
+			tableObj = document.getElementById("groundComputeBookContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#groundComputeBookContainer #tabl1").html();
+		} else if (ActiveTab == "地线力学特性表") {
+			tableObj = document.getElementById("groundPropertyContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#groundPropertyContainer #tabl1").html();
+		} else if (ActiveTab == "地线架线表") {
+			tableObj = document.getElementById("groundStringingContainer").getElementsByTagName("table")[1];
+			deleteRow1Col1(tableObj);
+			tableHtml = $("#groundStringingContainer #tabl1").html();
+		}
+		table2Excel(tableHtml,ActiveTab);
+		location.reload();
 	})
-//	this.initCellData();
+	//	计算按钮
+	$('#calcBtn').on("click",function() {
+		wireProperty.executeWireProperty();
+	})
+	//	保存按钮
+	$('#saveBtn').on("click",function() {
+		layer.load(2,{shade: [0.1, '#393D49']});
+		wireProperty.saveResult();
+	})
 	//下拉框监听事件
 	this.selectListener();
+	
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		// 获取已激活的标签页的名称
+		ActiveTab = $(e.target).text(); 
+	});
 }
+/**
+ * 下拉框监听
+ */
 wireProperty.prototype.selectListener = function() {
 	// 导线型号下拉框
 	$("#wireType").on("change",function(){
@@ -33,31 +79,28 @@ wireProperty.prototype.selectListener = function() {
 			if (type==Wirelist[i].conductor_type) {
 				setCellValue(Zcell5,0,
 						[[14,4],[14,5],[14,6],[14,7],[14,8],[14,9]],
-						[Wirelist[i].modulus_elasticity,Wirelist[i].tem_exp_coefficient,Wirelist[i].unit_weight,
+						[Wirelist[i].modulus_elasticity,parseFloat(Wirelist[i].tem_exp_coefficient).toExponential(2),Wirelist[i].unit_weight,
 							Wirelist[i].diameter,Wirelist[i].cross_section_area,Wirelist[i].breaking_force]);
 			}
 		}
-	    wireProperty.executeWireProperty();
 	});
 }
-function toPoint(percent){
-    var str=percent.replace("%","");
-    str= str/100;
-    return str;
-}
-wireProperty.prototype.executeWireProperty = function() {
+/**
+ * 获取输入参数条件
+ */
+wireProperty.prototype.getWirePropertyParam = function() {
 	/*基本条件*/
 	var dxxh = $("#wireType_val").html();	//	导线型号
 	var zdzl = Zcell5.GetSheet(0).GetCellValue(5,5).replace("%","")/100;//	最大平均运行张力
 	var aqxs = Zcell5.GetSheet(0).GetCellValue(5,6);//	设计安全系数
 	var jxjw = Zcell5.GetSheet(0).GetCellValue(5,7);//	架线初伸长降温
 	var hzgd = Zcell5.GetSheet(0).GetCellValue(5,8);//	风荷载计算高度
-	var jzgd = $("#fhzjzgd").children("option:selected").val();//	风荷载基准高度
-	var czlb = $("#dxcclb").children("option:selected").val();//	地形粗糙度类别
+	var jzgd = $(".fhzjzgd").children("option:selected").val();//	风荷载基准高度
+	var czlb = $(".dxcclb").children("option:selected").val();//	地形粗糙度类别
 	var baseParam = {"dxxh":dxxh,"zdzl":zdzl,"aqxs":aqxs,"jxjw":jxjw,"hzgd":hzgd,"jzgd":jzgd,"czlb":czlb};	
 	/*导线参数*/
 	var txxs = Zcell5.GetSheet(0).GetCellValue(14,4);//	弹性系数
-	var pzxs = Zcell5.GetSheet(0).GetCellValue(14,5);//	线膨胀系数
+	var pzxs = new Number(Zcell5.GetSheet(0).GetCellValue(14,5));//	线膨胀系数
 	var cdzl = Zcell5.GetSheet(0).GetCellValue(14,6);//	单位长度重量
 	var wj = Zcell5.GetSheet(0).GetCellValue(14,7);//	外径
 	var jsjm = Zcell5.GetSheet(0).GetCellValue(14,8);//	计算截面
@@ -66,29 +109,43 @@ wireProperty.prototype.executeWireProperty = function() {
 	/*气象条件*/
 	var weatherConditions = [];
 	for (var i = 14; i <= 28; i++) {
-		var isCalculation = (Zcell5.GetSheet(0).GetCellValue(2,i))==="√"?1:0;
+		var isCalculation = Zcell5.GetSheet(0).GetCellValue(2,i)=="√"?1:0;
 		var workingConditionNo = Zcell5.GetSheet(0).GetCellValue(3,i);
 		var workingConditionName = Zcell5.GetSheet(0).GetCellValue(4,i);
 		var temperature = Zcell5.GetSheet(0).GetCellValue(5,i);
 		var windSpeed = Zcell5.GetSheet(0).GetCellValue(6,i);
 		var iceThickness = Zcell5.GetSheet(0).GetCellValue(7,i);
-		var isWindSpeedConversion = (Zcell5.GetSheet(0).GetCellValue(8,i))==="√"?1:0;
+		var isWindSpeedConversion = Zcell5.GetSheet(0).GetCellValue(8,i)=="√"?1:0;
 		var remarks = Zcell5.GetSheet(0).GetCellValue(9,i);
 		if (i>=23) {
 			var _thisCalc = Zcell5.GetSheet(0).GetCell(2, i).childNodes[1];
-			isCalculation =  _thisCalc.options[_thisCalc.selectedIndex].text==="√"?1:0;
+			isCalculation =  _thisCalc.previousSibling.innerHTML=="true"?1:0;
 			var _thisConv = Zcell5.GetSheet(0).GetCell(8, i).childNodes[1];
-			isCalculation =  _thisConv.options[_thisConv.selectedIndex].text==="√"?1:0;
+			isWindSpeedConversion =  _thisConv.previousSibling.innerHTML=="true"?1:0;
 		}
 		weatherConditions.push({"isCalculation":isCalculation,"workingConditionNo":workingConditionNo,
 			"workingConditionName":workingConditionName,"temperature":temperature,"windSpeed":windSpeed,
 			"iceThickness":iceThickness,"isWindSpeedConversion":isWindSpeedConversion,"remarks":remarks});
 	}
 	/*计算代表档距范围和步长*/
-	var	range =  Zcell5.GetSheet(0).GetCellValue(13,12);
+	var	startRange =  Zcell5.GetSheet(0).GetCellValue(13,12);
+	var endRange =  Zcell5.GetSheet(0).GetCellValue(15,12);
 	var step =  Zcell5.GetSheet(0).GetCellValue(13,13);
-	var steps = [range,step,800];
-	var param = {"baseParam":baseParam,"wirewayParam":wirewayParam,"weatherConditions":weatherConditions,"steps":steps};
+	var rangeLength = (endRange-startRange)/step;
+	var stepsList = [];
+	for (var i = 0; i <= rangeLength; i++) {
+		stepsList.push(startRange);
+		startRange += step;
+	}
+	var param = {"baseParam":baseParam,"wirewayParam":wirewayParam,"weatherConditions":weatherConditions,"steps":stepsList};
+	return param;
+}
+/**
+ * 计算导地线数据
+ */
+wireProperty.prototype.executeWireProperty = function() {
+	layer.load(2);
+	var param = wireProperty.getWirePropertyParam();
 	var url= basePath + 'mechanicsProperty/executeWireProperty.action';
 	$.ajax({
 		"type": "post",	// post防止中文参数乱码
@@ -98,11 +155,39 @@ wireProperty.prototype.executeWireProperty = function() {
 		"dataType":"json",
 		"async" : false,
 		"success":function(data){
+			layer.closeAll();
 			if (!Tools.isEmpty(data)) {
 				wireProperty.initWirePropertyCellData(data);
+				groundProperty.initWirePropertyCellData(data);
 			}
 		},
 		"error": function(e) {
+			layer.closeAll();
+			layer.msg("服务器出错");
+			console.info(e);
+		}
+	});
+}
+/**
+ * 保存导地线数据
+ */
+wireProperty.prototype.saveResult = function() {
+	var param = wireProperty.getWirePropertyParam();
+	var url= basePath + 'mechanicsProperty/saveResult.action';
+	$.ajax({
+		"type": "post",	// post防止中文参数乱码
+		"url": url,
+		"data": JSON.stringify(param),
+		"contentType": "application/json; charset=utf-8",
+		"dataType":"json",
+		"success":function(data){
+			layer.closeAll();
+			if (data.result==true) {
+				layer.msg("保存成功");
+			}
+		},
+		"error": function(e) {
+			layer.closeAll();
 			layer.msg("服务器出错");
 			console.info(e);
 		}
@@ -180,7 +265,13 @@ wireProperty.prototype.initData = function() {
 		"async" : false,
 		"success":function(data){
 			if (!Tools.isEmpty(data)) {
-				Wirelist = data.wirelist;
+				Wirelist = data.entryContition.wirewayParam;
+				const p = new Promise(function(resolve,reject){
+					  resolve(initConductorParam(data.entryContition.baseParam1[0],data.entryContition.weatherConditions1,data.entryContition.steps1[0]));
+					});
+					p.then(function(value){
+						wireProperty.executeWireProperty();
+					});
 			}
 		},
 		"error": function(e) {
@@ -190,13 +281,76 @@ wireProperty.prototype.initData = function() {
 	});
 }
 
+//	初始化导线参数
+var initConductorParam = function(baseParam,weatherCondition,steps){
+	/*下拉框生成*/
+	multipleGerateSelect(Zcell5,0,[[5,9],[5,10],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],
+		[8,23],[8,24],[8,25],[8,26],[8,27],[8,28]],
+			['fhzjzgd','dxcclb','calculation','calculation','calculation','calculation','calculation','calculation',
+				'windConversion','windConversion','windConversion','windConversion','windConversion','windConversion'],
+				[[10,15],['A','B','C','D'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],
+					['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×']]);
+	/*基本条件*/
+	var wireSelect = '<a id="wireType_val" class="Alabel"></a><select id="wireType" style="background-color:#92D050;text-align-last:center;width:98%;">';
+	var conductorCondition = null;
+	for (var i = 0; i < Wirelist.length; i++) {
+		if (baseParam.wireType==Wirelist[i].conductor_type) {
+			conductorCondition = Wirelist[i];
+			wireSelect+= '<option selected>'+Wirelist[i].conductor_type+'</option>';
+		}else{
+			wireSelect+= '<option>'+Wirelist[i].conductor_type+'</option>';
+		}
+	}
+	wireSelect+='</select>';
+	Zcell5.GetSheet(0).SetCellType(5, 4, {
+	    "code": "object",
+	    "object":wireSelect
+	});
+	$("#wireType_val").html(baseParam.wireType);	//	导线型号
+	Zcell5.GetSheet(0).SetCellValue(5,5,toPercent(baseParam.maxTension));//	最大平均运行张力
+	Zcell5.GetSheet(0).SetCellValue(5,6,baseParam.securityCoefficient);//	设计安全系数
+	Zcell5.GetSheet(0).SetCellValue(5,7,baseParam.stringingCooling);//	架线初伸长降温
+	Zcell5.GetSheet(0).SetCellValue(5,8,baseParam.windLoadCalcHeight);//	风荷载计算高度
+	$("#wireComputeBook .fhzjzgd").val(baseParam.windLoadRefeHeight);//	风荷载基准高度  
+	$("#wireComputeBook .dxcclb").val(baseParam.terrainRoughness);//	地形粗糙度类别
+	/*导线参数*/
+	Zcell5.GetSheet(0).SetCellValue(14,4,conductorCondition.modulus_elasticity);//	弹性系数
+	Zcell5.GetSheet(0).SetCellValue(14,5,conductorCondition.tem_exp_coefficient);//	线膨胀系数
+	Zcell5.GetSheet(0).SetCellValue(14,6,conductorCondition.unit_weight);//	单位长度重量
+	Zcell5.GetSheet(0).SetCellValue(14,7,conductorCondition.diameter);//	外径
+	Zcell5.GetSheet(0).SetCellValue(14,8,conductorCondition.cross_section_area);//	计算截面
+	Zcell5.GetSheet(0).SetCellValue(14,9,conductorCondition.breaking_force);//	拉断力
+	/*气象条件*/
+	for (var i = 0; i < weatherCondition.length; i++) {
+		Zcell5.GetSheet(0).SetCellValue(2,i+14,weatherCondition[i].isCalculation==true?"√":"×");//	参与计算
+		Zcell5.GetSheet(0).SetCellValue(3,i+14,weatherCondition[i].workingConditionNo);//	工况序号
+		Zcell5.GetSheet(0).SetCellValue(4,i+14,weatherCondition[i].workingConditionName);//	工况名称
+		Zcell5.GetSheet(0).SetCellValue(5,i+14,weatherCondition[i].temperature);//	温度℃
+		Zcell5.GetSheet(0).SetCellValue(6,i+14,weatherCondition[i].windSpeed);//	风速m/s
+		Zcell5.GetSheet(0).SetCellValue(7,i+14,weatherCondition[i].iceThickness);//	冰厚mm
+		Zcell5.GetSheet(0).SetCellValue(8,i+14,weatherCondition[i].isWindSpeedConversion==true?"√":"×");//	风速折算
+		Zcell5.GetSheet(0).SetCellValue(9,i+14,weatherCondition[i].remarks);//	备注
+		if (i>=9) {
+			$(".calculation").eq(i-9).val(weatherCondition[i].isCalculation+"");
+			$(".windConversion").eq(i-9).val(weatherCondition[i].isWindSpeedConversion+"");
+			var _thisCalc = Zcell5.GetSheet(0).GetCell(2, i+14).childNodes[1];
+			_thisCalc.previousSibling.innerHTML  = weatherCondition[i].isCalculation;
+			var _thisConv = Zcell5.GetSheet(0).GetCell(8, i+14).childNodes[1];
+			_thisConv.previousSibling.innerHTML  = weatherCondition[i].isWindSpeedConversion;
+		}
+	}
+	/*计算代表档距范围和步长*/
+	Zcell5.GetSheet(0).SetCellValue(13,12,steps.spanStart);
+	Zcell5.GetSheet(0).SetCellValue(13,13,steps.steps);
+	
+}
 
 wireProperty.prototype.initCellTableData = function(data){
 	groundStringingContainer();
-	wireStringingContainer();
 	groundPropertyCellTable();
-	wirePropertyCellTable();
 	groundComputeBookCellTable();
+	wireStringingContainer();
+	wirePropertyCellTable();
 	wireComputeBookCellTable();
 }
 
@@ -282,37 +436,7 @@ var wireComputeBookCellTable = function(){
 					],
 			["名称","单位","数值","名称","符号","数值","单位","参与计算","工况序号","工况","温度℃","风速m/s","冰厚mm","风速折算","备注",
 				"/","/","/","℃","m","m","m","弹性系数","线膨胀系数","单位长度重量","外径","计算截面","拉断力",
-					"E","α","W","d","S","Tp","MPa","1/℃","kg/m","mm","mm2","N","-",800,
-				]);
-	var count = 1;
-	var workCondition=  ["最低气温","平均气温","最大风","覆冰","最高气温","安装","外过电压","外过电压","内过电压","5m/s风速","地线+5","三跨导线","三跨地线","验算4","验算5"];
-	for (var i = 14; i <= 28; i++) {
-		Zcell5.GetSheet(0).SetCellValue(3,i,count);
-		Zcell5.GetSheet(0).SetCellValue(4,i,workCondition[count-1]);
-		Zcell5.GetSheet(0).SetCellValue(2,i,["√","√","√","√","√","√","√","√","√"][count-1]);
-		Zcell5.GetSheet(0).SetCellValue(5,i,[-20,15,-5,-5,40,-10,15,15,15,15,-5,-5,-5,-5,-5][count-1]);
-		Zcell5.GetSheet(0).SetCellValue(6,i,[0,0,27,10,0,10,0,10,15,5,10,10,10,0,0][count-1]);
-		Zcell5.GetSheet(0).SetCellValue(7,i,[0,0,0,10,0,0,0,0,0,0,15,20,25,3,4][count-1]);
-		Zcell5.GetSheet(0).SetCellValue(8,i,["×","×","√","×","×","×","×","×","×"][count-1]);
-		Zcell5.GetSheet(0).SetCellValue(9,i,["","","","","","","(无风)","(有风)","","钢管杆用","验算1","验算2","验算3","验算4","验算5"][count-1]);
-		count++;
-	}
-	var wireSelect = '<a id="wireType_val" class="Alabel"></a><select id="wireType" style="background-color:#92D050;text-align-last:center;">';
-	for (var i = 0; i < Wirelist.length; i++) {
-		wireSelect+= '<option>'+Wirelist[i].conductor_type+'</option>';
-	}
-	wireSelect+='</select>';
-	Zcell5.GetSheet(0).SetCellType(5, 4, {
-	    "code": "object",
-	    "object":wireSelect
-	});
-	setCellValue(Zcell5,0,[[5,5],[5,6],[5,7],[5,8],[13,12],[13,13]],['25%',8,-25,15,10,10]);
-	multipleGerateSelect(Zcell5,0,[[5,9],[5,10],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],
-		[8,23],[8,24],[8,25],[8,26],[8,27],[8,28]],
-			['fhzjzgd','dxcclb','windSpeed','groundPlus5','threeWire','threeGround','check4','check5',
-				'windConversion1','windConversion2','windConversion3','windConversion4','windConversion5','windConversion6'],
-				[[10,15],['A','B','C','D'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],
-					['√','×'],['√','×'],['√','×'],['√','×'],['√','×'],['√','×']]);
+					"E","α","W","d","S","Tp","MPa","1/℃","kg/m","mm","mm2","N","-",800,	]);
 }
 
 /**
@@ -336,7 +460,7 @@ var groundComputeBookCellTable = function(){
 	}
 	//	样式
 	for (var i = 2; i <= 6; i++) {
-		for (var j = 3; j <= 10; j++) {
+		for (var j = 3; j <= 8; j++) {
 			Zcell3.GetSheet(0).SetCellStyle(i, j, {
 				"border" : "0.5px solid black"
 			});
@@ -349,13 +473,6 @@ var groundComputeBookCellTable = function(){
 			});
 		}
 	}
-	for (var i = 11; i <= 15; i++) {
-		for (var j = 18; j <= 23; j++) {
-			Zcell3.GetSheet(0).SetCellStyle(i, j, {
-				"border" : "0.5px solid black"
-			});
-		}
-	}
 	for (var i = 2; i <= 9; i++) {
 		for (var j = 13; j <= 28; j++) {
 			Zcell3.GetSheet(0).SetCellStyle(i, j, {
@@ -363,17 +480,15 @@ var groundComputeBookCellTable = function(){
 			});
 		}
 	}
-	for (var i = 5; i <= 8; i++) {
-		for (var j = 14; j <= 28; j++) {
+	for (var i = 11; i <= 14; i++) {
+		for (var j = 16; j <= 17; j++) {
 			Zcell3.GetSheet(0).SetCellStyle(i, j, {
-				"background-color" : "#FFFF00"
+				"border" : "0.5px solid black"
 			});
 		}
 	}
-	
-	setCellStyle(Zcell3,0,[[5,5],[5,6],[5,7],[5,8],[4,24],[4,25],[4,26],[4,27],[4,28],[13,12],[13,13]],{"background-color" : "#FFFF00"});
-	setCellStyle(Zcell3,0,[[5,4],[5,9],[5,10],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28],[8,23],[8,24],[8,25],[8,26],[8,27],[8,28]],{"background-color" : "#92D050"});
-	setCellStyle(Zcell3,0,[[11,16],[13,16]],{"border" : "0.5px solid black"});
+	setCellStyle(Zcell3,0,[[5,5]],{"background-color" : "#FFFF00"});
+	setCellStyle(Zcell3,0,[[5,4],[2,23],[2,24],[2,25],[2,26],[2,27],[2,28]],{"background-color" : "#92D050"});
 	//合并单元格
 	Zcell3.GetSheet(0).MergeCells(1,1,17,1);
 	Zcell3.GetSheet(0).MergeCells(2,2,9,2);
@@ -382,7 +497,11 @@ var groundComputeBookCellTable = function(){
 	Zcell3.GetSheet(0).MergeCells(10,11,17,11);
 	Zcell3.GetSheet(0).MergeCells(10,15,17,15);
 	Zcell3.GetSheet(0).MergeCells(11,16,12,16);
+	Zcell3.GetSheet(0).MergeCells(11,17,12,17);
+	Zcell3.GetSheet(0).MergeCells(13,16,14,16);
+	Zcell3.GetSheet(0).MergeCells(13,17,14,17);
 	Zcell3.GetSheet(0).SetCellValue(11,16,"是否与导线配合计算");
+	Zcell3.GetSheet(0).SetCellValue(11,17,"导地线间距控制式");
 	for (var i = 3; i <= 10; i++) {
 		Zcell3.GetSheet(0).MergeCells(2,i,3,i);
 		Zcell3.GetSheet(0).MergeCells(5,i,6,i);
@@ -394,24 +513,24 @@ var groundComputeBookCellTable = function(){
 			Zcell3.GetSheet(0).MergeCells(14,i,15,i);
 		}
 	}	
-	for (var i = 18; i <= 23; i++) {
+	for (var i = 19; i <= 24; i++) {
 		Zcell3.GetSheet(0).MergeCells(11,i,12,i);
 		Zcell3.GetSheet(0).MergeCells(14,i,15,i);
 	}	
 	// 单元格赋值
 	setCellValueAndStyle(Zcell3,0,
 	[[1,1],[2,2],[10,2],[2,12],[11,11],[10,15],[12,12],[12,13],
-		[3,4],[3,5],[3,6],[3,7],[3,8],[3,9],[3,10],],
+		[3,4],[3,5],[3,6],[3,7],[3,8]],
 	["输入条件","（1）基本条件","（3）地线参数","（2）气象条件","（4）计算代表档距范围和步长","（5）控制因素","代表档距范围：","代表档距步长值：",
-		"导线型号","最大平均运行张力","设计安全系数","架线初伸长降温","风荷载计算高度","风荷载基准高度","地形粗糙度类别",],
+		"导线型号","架线初伸长降温","风荷载计算高度","风荷载基准高度","地形粗糙度类别",],
 		{"text-align" : "left"});
 	setCellValue(Zcell3,0,
-			[[2,3],[4,3],[5,3],[11,3],[13,3],[15,3],[16,3],[2,13],[3,13],[4,13],[5,13],[6,13],[7,13],[8,13],[9,13],[11,18],[13,18],[14,18],
-				[4,4],[4,5],[4,6],[4,7],[4,8],[4,9],[4,10],[11,4],[11,5],[11,6],[11,7],[11,8],[11,9],
+			[[2,3],[4,3],[5,3],[11,3],[13,3],[15,3],[16,3],[2,13],[3,13],[4,13],[5,13],[6,13],[7,13],[8,13],[9,13],[11,19],[13,19],[14,19],
+				[4,4],[4,5],[4,6],[4,7],[4,8],[11,4],[11,5],[11,6],[11,7],[11,8],[11,9],
 				[13,4],[13,5],[13,6],[13,7],[13,8],[13,9],[16,4],[16,5],[16,6],[16,7],[16,8],[16,9],[14,12],[15,12],
 					],
 			["名称","单位","数值","名称","符号","数值","单位","参与计算","工况序号","工况","温度℃","风速m/s","冰厚mm","风速折算","备注","名称","单位","数值",
-				"/","/","/","℃","m","m","m","弹性系数","线膨胀系数","单位长度重量","外径","计算截面","拉断力",
+				"/","℃","m","m","m","弹性系数","线膨胀系数","单位长度重量","外径","计算截面","拉断力",
 					"E","α","W","d","S","Tp","MPa","1/℃","kg/m","mm","mm2","N","-",800,
 				]);
 	var count = 1;
@@ -423,7 +542,7 @@ var groundComputeBookCellTable = function(){
 		Zcell3.GetSheet(0).SetCellValue(5,i,[-20,15,-5,-5,40,-10,15,15,15,15,-5,-5,-5,-5,-5][count-1]);
 		Zcell3.GetSheet(0).SetCellValue(6,i,[0,0,27,10,0,10,0,10,15,5,10,10,10,0,0][count-1]);
 		Zcell3.GetSheet(0).SetCellValue(7,i,[0,0,0,10,0,0,0,0,0,0,15,20,25,3,4][count-1]);
-		Zcell3.GetSheet(0).SetCellValue(8,i,["×","×","√","×","×","×","×","×","×"][count-1]);
+		Zcell3.GetSheet(0).SetCellValue(8,i,["×","×","√","×","×","×","×","×","×","×","×","×","×","×","×"][count-1]);
 		Zcell3.GetSheet(0).SetCellValue(9,i,["","","","","","","(无风)","(有风)","","钢管杆用","验算1","验算2","验算3","验算4","验算5"][count-1]);
 		count++;
 	}
@@ -1390,156 +1509,16 @@ var wireStringingContainer = function(){
 	});
 }
 
-
-function switchData(condition,dataArray,resultArray){
-	for (var i = 0; i < dataArray.length; i++) {
-		if (dataArray[i]==condition) {
-			return resultArray[i];
-		}
+var deleteRow1Col1 = function(tableObj){
+	for(let i = 0;i < tableObj.rows.length;i++){
+		let  height = tableObj.rows[i].childNodes[0].style.height;
+		tableObj.rows[i].childNodes[1].style.height = height;
+		tableObj.rows[i].deleteCell(0);
 	}
-	return "";
-}
-
-var UnitConversion = {
-    /**
-     * 获取DPI
-     * @returns {Array}
-     */
-    conversion_getDPI : function () {
-        var arrDPI = new Array;
-        if (window.screen.deviceXDPI) {
-            arrDPI[0] = window.screen.deviceXDPI;
-            arrDPI[1] = window.screen.deviceYDPI;
-        } else {
-            var tmpNode = document.createElement("DIV");
-            tmpNode.style.cssText = "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden";
-            document.body.appendChild(tmpNode);
-            arrDPI[0] = parseInt(tmpNode.offsetWidth);
-            arrDPI[1] = parseInt(tmpNode.offsetHeight);
-            tmpNode.parentNode.removeChild(tmpNode);
-        }
-        return arrDPI;
-    },
-    /**
-     * px转换为mm
-     * @param value
-     * @returns {number}
-     */
-    pxConversionMm : function (value) {
-        var inch = value/this.conversion_getDPI()[0];
-        var c_value = inch * 25.4;
-//      console.log(c_value);
-        return c_value;
-    },
-    /**
-     * mm转换为px
-     * @param value
-     * @returns {number}
-     */
-    mmConversionPx : function (value) {
-        var inch = value/25.4;
-        var c_value = inch*this.conversion_getDPI()[0];
-//      console.log(c_value);
-        return c_value;
-    }
-}
-
-/**
- * 导出excel
- * @param 表格id tableid
- * @param excel名称 name
- * @returns
- */
-function exportExcel(tableid,downloadName,sheetName) {
-  if(getExplorer()=='ie')
-  {
-      var curTbl = document.getElementById(tableid);
-      var oXL = new ActiveXObject("Excel.Application");
-      var oWB = oXL.Workbooks.Add();
-      var xlsheet = oWB.Worksheets(1);
-      var sel = document.body.createTextRange();
-      sel.moveToElementText(curTbl);
-      sel.select();
-      sel.execCommand("Copy");
-      xlsheet.Paste();
-      oXL.Visible = true;
-
-      try {
-          var fname = oXL.Application.GetSaveAsFilename("Excel.xls", "Excel Spreadsheets (*.xls), *.xls");
-      } catch (e) {
-          print("Nested catch caught " + e);
-      } finally {
-          oWB.SaveAs(fname);
-          oWB.Close(savechanges = false);
-          oXL.Quit();
-          oXL = null;
-          idTmr = window.setInterval("Cleanup();", 1);
-      }
-
-  }
-  else
-  {
-      tableToExcel(tableid,downloadName,sheetName)
-  }
-}
-function Cleanup() {
-  window.clearInterval(idTmr);
-  CollectGarbage();
-}
-
-
-//判断浏览器后调用的方法，把table的id传入即可
-var tableToExcel = (function() {
-  var uri = 'data:application/vnd.ms-excel;base64,'
-    , template = '<html><head><meta charset="UTF-8"><style type="text/css"> td{  text-align:center;display: table-cell;vertical-align:center }</style></head><body><table>{table}</table></body></html>'
-    , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
-    , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
-  return function(table,downloadName,sheetName) {
-    if (!table.nodeType) table = document.getElementById(table)
-    var ctx = {worksheet: sheetName || 'Worksheet', table: table.innerHTML}
-    var link = document.createElement("A");
-  	link.href =  uri + base64(format(template, ctx));
-  	link.download = downloadName+'.xls';
-  	link.target = '_blank';
-  	document.body.appendChild(link);
-  	link.click();
-  	document.body.removeChild(link);
-  }
-})()
-
-/**
- * 
- * @param type
- * @returns 1:"YYYY-MM-DD",2:"YYYY/MM/DD",3:"YYYY年MM月DD日"
- */
-function getCurrentDate(type){
-	var myDate = new Date();
-	var curdate ="";
-	if (type==1) {
-		curdate = myDate.getFullYear()+"-"+(myDate.getMonth()+1)+ "-"+ myDate.getDate(); 
-	}else if(type==2){
-		curdate = myDate.getFullYear()+"/"+(myDate.getMonth()+1)+ "/"+ myDate.getDate(); 
-	}else if(type==3){
-		curdate = myDate.getFullYear()+"年"+(myDate.getMonth()+1)+ "月"+ myDate.getDate() + "日"; 
-	}else{
-		curdate = "";
+	var row1 = tableObj.rows[0].childNodes;
+	for (let i = 0; i < row1.length; i++) {
+		let width = row1[i].style.width;
+		tableObj.rows[1].childNodes[i].style.width = width;
 	}
-	return curdate;
-}
-
-
-function exportExcelOrigin(tableObj,tableId, name){
-    var tableHTML = document.querySelector("table").outerHTML;
-    var xlsContent= `<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
-  xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="ProgId" content="Excel.Sheet" /> 
-</head>
-<body>${tableHTML}</body>
-</html>`; 
-    var blob = new Blob([xlsContent], { type: "application/vnd.ms-excel" });
-    tableObj.href = URL.createObjectURL(blob);
-    tableObj.download = name+".xls";
-    location.href = tableObj.href;
+	tableObj.deleteRow(0); 
 }

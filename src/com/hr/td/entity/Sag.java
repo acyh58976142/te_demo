@@ -1,22 +1,42 @@
 package com.hr.td.entity;
 
-import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 力学特征  - 弧垂
  * @author zhh
  *
  */
-public class Sag implements Serializable{
+@Entity
+@Table(name = "mp_sag")
+public class Sag{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private String id;
 	private double representativeSpan;//代表档距
 	private double icing;//覆冰
 	private double maxTemperature;//最高气温
 	private double abroadNoWind;//外过(无风)
+	private int wireTypeTag;	//参数类型 1:导线 2:地线
+	
+	@Id
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public int getWireTypeTag() {
+		return wireTypeTag;
+	}
+	public void setWireTypeTag(int wireTypeTag) {
+		this.wireTypeTag = wireTypeTag;
+	}
 	public double getRepresentativeSpan() {
 		return representativeSpan;
 	}

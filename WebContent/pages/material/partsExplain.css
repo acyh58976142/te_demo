@@ -1,0 +1,5 @@
+table td{
+    border-collapse: separate!important;
+    border: 1px solid black;
+    text-align:center;
+}

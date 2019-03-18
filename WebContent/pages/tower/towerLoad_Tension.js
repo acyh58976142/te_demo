@@ -1,0 +1,204 @@
+/**
+ * 计算水平张力
+ */
+
+function calcu_horizontalTension(){
+
+
+	var B56=$(".B56").val();
+	var E56=$(".E56").val();
+	var D69=$(".D69").val();
+	var D70=$(".D70").val();
+	 B349="Lp="+B56;
+	 B350="Lp="+E56;
+	 B351="Lp="+B56;
+	 B352="Lp="+E56;
+	 B353="Lp="+B56;
+	 B354="Lp="+E56;
+	 $(".B349").text(B349);
+	 $(".B350").text(B350);
+	 $(".B351").text(B351);
+	 $(".B352").text(B352);
+	 $(".B353").text(B353);
+	 $(".B354").text(B349);
+		
+
+	$.ajax({
+		type:"POST",
+		url:path+"towerLoad/getHorizontalTension.action",
+		data:{
+			representativeSpan:B56,
+			conductor_type:conductor_type
+		},
+		success:function(data){
+			if(data.code=="200"){
+				var list=data.data;
+				var list2=data.data;
+				for(i=0;i<list.length;i++){
+					if(B56==list[i].representativeSpan){
+						C349=list[i].icing;
+						D349=list[i].maxWind;
+						E349=list[i].minTemperature;
+						F349=list[i].installV;
+						G349=list[i].second5Wind;
+						H349="/";
+						I349=list[i].maxTemperature;
+						J349=Number(F349)*1.15;
+						$(".C349").text(C349.toFixed(4));
+						$(".D349").text(D349.toFixed(4));
+						$(".E349").text(E349.toFixed(4));
+						$(".F349").text(F349.toFixed(4));
+						$(".G349").text(G349.toFixed(4));
+						$(".H349").text(H349);
+						$(".I349").text(I349.toFixed(4));
+						$(".J349").text(J349.toFixed(4));
+						C351=Number(C349)*Number(D69);
+						D351=Number(D349)*Number(D69);
+						E351=Number(E349)*Number(D69);
+						F351=Number(F349)*Number(D69);
+						G351=Number(G349)*Number(D69);
+						H351="/";
+						I351=Number(I349)*Number(D69);
+						J351=Number(J349)*Number(D69);
+						$(".C351").text(C351.toFixed(4));
+						$(".D351").text(D351.toFixed(4));
+						$(".E351").text(E351.toFixed(4));
+						$(".F351").text(F351.toFixed(4));
+						$(".G351").text(G351.toFixed(4));
+						$(".H351").text(H351);
+						$(".I351").text(I351.toFixed(4));
+						$(".J351").text(J351.toFixed(4));
+					}
+				}
+				for(i=0;i<list2.length;i++){
+					if(E56==list[i].representativeSpan){
+						C350=list[i].icing;
+						D350=list[i].maxWind;
+						E350=list[i].minTemperature;
+						F350=list[i].installV;
+						G350=list[i].second5Wind;
+						H350="/";
+						I350=list[i].maxTemperature;
+						J350=Number(F350)*1.15;
+						$(".C350").text(C350.toFixed(4));
+						$(".D350").text(D350.toFixed(4));
+						$(".E350").text(E350.toFixed(4));
+						$(".F350").text(F350.toFixed(4));
+						$(".G350").text(G350.toFixed(4));
+						$(".H350").text(H350);
+						$(".I350").text(I350.toFixed(4));
+						$(".J350").text(J350.toFixed(4));
+						C352=Number(C350)*Number(D70);
+						D352=Number(D350)*Number(D70);
+						E352=Number(E350)*Number(D70);
+						F352=Number(F350)*Number(D70);
+						G352=Number(G350)*Number(D70);
+						H352="/";
+						I352=Number(I350)*Number(D70);
+						J352=Number(J350)*Number(D70);
+						$(".C352").text(C352.toFixed(4));
+						$(".D352").text(D352.toFixed(4));
+						$(".E352").text(E352.toFixed(4));
+						$(".F352").text(F352.toFixed(4));
+						$(".G352").text(G352.toFixed(4));
+						$(".H352").text(H352);
+						$(".I352").text(I352.toFixed(4));
+						$(".J352").text(J352.toFixed(4));
+					}
+				}
+		
+				
+			}
+		},
+		error:function(){
+			alert("系统错误");
+		}
+	})
+	D366=38962;
+	F366=38962;
+	D368=38962;
+	F368=38962;
+	$(".D366").text(D366);
+	$(".F366").text(F366);
+	$(".D368").text(D368);
+	$(".F368").text(F368);
+	var C63=$('input:checkbox[name="C63"]:checked').val();
+	var C50=$('.C50').val();
+	var C117=$('.C117').val();
+	if(C63==undefined){
+		alert("请选择杆塔类型");
+		return;
+	}else{
+		if(C63==1){
+			I358=(B82<120?0.3:(B82<230?0.35:0.4));
+			I359=(C82<120?0.3:(B82<230?0.35:0.4));
+		}else{
+			I358=(B82<230?0.4:0.45);
+			I359=(C82<230?0.4:0.45);
+		}
+	}
+	$(".I358").text(I358);
+	$(".I359").text(I359);
+	if(C50==1){
+		H358=I358;
+		H359=I359;
+	}else{
+		H358=0.7;
+		H359=0.7;
+	}
+	H360=1;
+	H361=1;
+	if(C117<=10){
+		H362=(C50==1?0.1:0.7);
+	}else{
+		H362=(C50==1?0.15:0.35);
+	}
+	$(".H358").text(H358);
+	$(".H359").text(H359);
+	$(".H360").text(H360);
+	$(".H361").text(H361);
+	$(".H362").text(H362);
+	$(".H363").text(H363);
+	var C7=220;
+		if(C7<=330){
+			H364=(C63==1)?0.3:0.5;
+			H365=(C63==1)?0.3:0.5;
+		}else{
+			H364=(C63==1)?0.4:0.5;
+			H365=(C63==1)?0.4:0.5;
+		}
+	$(".H364").text(H364);
+	$(".H365").text(H365);
+	G358=H358+"Tmax";
+	G359=H359+"Tmax";
+	G360=H360+"Tmax";
+	G361=H361+"Tmax";
+	G362=H362+"Tmax";
+	G363=H363+"Tmax";
+	G364=H364+"Tmax";
+	G365=H365+"Tmax";
+	$(".G358").text(G358);
+	$(".G359").text(G359);
+	$(".G360").text(G360);
+	$(".G361").text(G361);
+	$(".G362").text(G362);
+	$(".G363").text(G363);
+	$(".G364").text(G364);
+	$(".G365").text(G365);
+	D358=Number(D366)*Number(H358);
+	D359=Number(F366)*Number(H359);
+	D360=Number(D368)*Number(H360);
+	D361=Number(F368)*Number(H361);
+	D362=Number(D366)*Number(H362);
+	D364=Number(D368)*Number(H364);
+	D365=Number(F368)*Number(H365);
+	$(".D358").text(D358.toFixed(4));
+	$(".D359").text(D359.toFixed(4));
+	$(".D360").text(D360);
+	$(".D361").text(D361);
+	$(".D362").text(D362);
+	$(".D363").text(D363);
+	$(".D364").text(D364);
+	$(".D365").text(D365);
+	getcount1();
+}

@@ -6,6 +6,12 @@ function towerAdd() {
 	 
 	 //删除删除文件(多)
 	 $(document).delegate(".delFile-img","click",this.delUploadFile);
+	// 上传附件
+	 $("#tower_file_btn").on('click',this.uploadFile);
+	 $("#tower_file_input").on("change",Tools.bind(this,this.uploadSuer));
+	  // 删除附件
+	 $(document).delegate(".applyAdd_delFile","click",Tools.bind(this,this.delFile)); 
+	 
 	// 提交
 	$(document).delegate("#submit","click",Tools.bind(this,this.fileSubmit)); 
 }
@@ -19,7 +25,8 @@ towerAdd.prototype.fileDelAry = new Object();
 towerAdd.prototype.fileSubmit = function() {
 	var projectName = $('#projectName').val();
 	var projectNo = $("#projectNo").val();
-	//var deviceType = $("#deviceType").val();
+	var datas = this.getFilesData();
+
 	if(null == projectName || projectName.length <= 0) {
 		Tools.tipsMsg("请输入工程名称");
 		return false;
@@ -29,16 +36,22 @@ towerAdd.prototype.fileSubmit = function() {
 		return false;
 	}
 
-	if(null == towerAdd.fileAddAry || towerAdd.fileAddAry.length <= 0) {
-		Tools.tipsMsg("请上传文件");
+	if(JSON.stringify(towerAdd.fileAddAry)=="{}") {
+		Tools.tipsMsg("请上传TA文件");
 		return false;
 	}
+	if(Tools.isEmpty($(".applyAdd_file").attr("newName"))) {
+		Tools.tipsMsg("请上传route文件");
+		return false;
+	}
+
 	$.ajax({
 		type : 'post',
 		url : path + 'Tower/addMain.action',
 		data : {
 			'projectName' : projectName,
 			'projectNo' : projectNo,
+			'param' : JSON.stringify(datas),
 			'params' : JSON.stringify(towerAdd.fileAddAry)
 		},
 		success : function(data) {
@@ -47,7 +60,7 @@ towerAdd.prototype.fileSubmit = function() {
 					btn : "确认"
 				}, function() {//按钮执行事件
 					location.href = path
-					+ "Tower/towerEdit.action?projectId="+data.projectId;
+					+ "Tower/projectList.action";
 				});							
 			} else {
 				Tools.tipsMsg("提交失败！");
@@ -62,23 +75,14 @@ towerAdd.prototype.fileSubmit = function() {
 /**
 * 获取页面的参数
 */
-towerAdd.prototype.getFilesData = function(e){
-	var datas = new Array();	
-	var files = $(".applyAdd_file");	
-	for(var i = 1;i < files.length +1;i++)
-	{   var o = new Object();
-		var file = $(".applyAdd_row" + i).find(".applyAdd_file");
-		if($(file).html()==""){
-			continue;
-		}
-		o.sorNo =i;
-		o.fileName = $(file).html();
-		o.newName = $(file).attr("newName");
-		o.filePath = $(file).attr("filePath");	
+towerAdd.prototype.getFilesData = function(){
+		var files = $("#tower_file_btn");	
+		var o = new Object();
+		o.fileName = $(".applyAdd_file").html();
+		o.newName = $(".applyAdd_file").attr("newName");
+		o.filePath = $(".applyAdd_file").attr("filePath");	
 		
-		datas.push(o);		
-	}
-	return datas;
+	return o;
 };
 
 /**
@@ -146,6 +150,11 @@ towerAdd.prototype.filingUploadBtn = function(){
 };
 towerAdd.prototype.filingUpload = function(){
 	var file = $('#summary_file_input').val();
+	var fileend = file.substring(file.lastIndexOf("."));
+	if(fileend!=".TA"){
+		 Tools.tipsMsg("请选择.TA类型的文件!");
+        return;
+    }
 	if(file == ''){
 		Tools.tipsMsg('请选择需要上传的文件');
 		return;
@@ -161,7 +170,7 @@ towerAdd.prototype.filingUpload = function(){
    	 		var fileSpan = towerAdd.fileSpan.replace('{0}',data.oldName).replace('{1}',data.id).replace('{2}',data.url);
    	 		$($file_div).append(fileSpan);
    	 		data.sort = Object.keys(towerAdd.fileAddAry).length+1;
-   	 	towerAdd.fileAddAry[data.id] = data;
+   	 		towerAdd.fileAddAry[data.id] = data;
    		 	Tools.tipsMsg('上传文件:'+ data.oldName +' 成功');
    	 	}else{
    	 		Tools.tipsMsg('上传文件失败!');
@@ -169,4 +178,86 @@ towerAdd.prototype.filingUpload = function(){
        },
   };
 	$("#login_Form").ajaxSubmit(options);
+};
+
+/**
+ * 上传附件
+ */
+towerAdd.prototype.uploadFile = function(){
+	$('#tower_file_input').click();
+	
+};
+
+/**
+ * 上传附件
+ */
+towerAdd.prototype.uploadSuer = function(){
+	var file = $('#tower_file_input').val();
+	var fileend = file.substring(file.lastIndexOf("."));
+	if(fileend!=".xls"){
+		 Tools.tipsMsg("请选择.xls类型的文件!");
+        return;
+    }
+	if(file == ''){
+		Tools.tipsMsg('请选择需要上传的文件');
+		return;
+	}
+	var options = {   
+	   url : path + "/upload?processor=nrfile",
+       type :'post',
+       data : null,
+       dataType : "json",
+       success : function(data){
+    	   
+    	 	if(data.succ){
+    	 		var btn = $("#tower_file_btn");
+    	 		/*var label = $("#tower_file_input").prev();
+    	 		$(label).html('<i class="fa fa-file-text"></i>');*/
+    	 		$(".applyAdd_file").html(data.oldName);
+    	 		$(".applyAdd_file").attr("filePath",data.url);
+    	 		$(".applyAdd_file").attr("newName",data.newName);
+    	 		$(".applyAdd_file").after("<label title='删除附件' class='applyAdd_delFile'><i class='fa fa-trash-o'></i></label>");
+    	 		$(".tower_file_btn").hide();
+    		 	Tools.tipsMsg('上传文件:'+ data.oldName +' 成功');
+    	 	}else{
+    	 		Tools.tipsMsg('上传文件失败,服务器端发生异常!');
+    	 	}
+         },
+    };
+	$("#route_Form").ajaxSubmit(options);
+};
+
+/**
+ * 删除附件
+ */
+towerAdd.prototype.delFile = function(){
+	
+	var delFileSuccess = function(){
+	
+		var delSucc = function(data){
+			if(data)
+			{
+				$(".applyAdd_file").html("");
+		
+				$(".applyAdd_file").attr("filePath","");
+				$(".applyAdd_file").attr("newName","");
+				$("tower_file_btn").show();
+				$(".applyAdd_delFile").remove();
+				// 如果提交后,再进行删除需要删除附件表中数据
+				Tools.tipsMsg('删除成功!');
+			}else{
+				Tools.tipsMsg('删除失败!');
+			}
+		};
+		
+		$.ajax({
+			type : 'post',
+			url : path + '/file/deleteFileByName.action',
+			data : {
+				strFileName : $(".applyAdd_file").attr("filePath"),
+			},
+			success : delSucc
+		});
+	};
+	Tools.tipsConfirm("确定要删除附件吗?",delFileSuccess,false);
 };

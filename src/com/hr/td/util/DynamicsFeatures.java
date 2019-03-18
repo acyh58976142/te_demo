@@ -1,6 +1,8 @@
 package com.hr.td.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +39,58 @@ public class DynamicsFeatures {
 	 */
 	public static  Map<String,Object>  initLoad(Map<String,String> baseParam,Map<String,String> wirewayParam,  List<Map<String,String>> weatherConditions,List<Double> steps)
 	{
+//		 ListSortUtil.sort(weatherConditions, true, "");
+//		wirewayParam.put("pzxs", "0.0000196");
+		
+		Collections.sort(weatherConditions, new Comparator<Map<String, String>>() {
+	            public int compare(Map<String, String> o1, Map<String, String> o2) {
+	                int map1value = Integer.parseInt(String.valueOf(o1.get("workingConditionNo")));
+	                int map2value = Integer.parseInt(String.valueOf(o2.get("workingConditionNo")));
+	                
+	                return map1value - map2value;
+	            }
+	      });
+		
+		
+		 Map<String,Object> mapLoads = getLoad(baseParam,wirewayParam,weatherConditions);
+		 List<Load>   listsCritical = (List<Load>) mapLoads.get("partLoads");
+		 List<Load>   lists =  (List<Load>) mapLoads.get("allLoads");
+	
+		 //合并
+//		 Collections.sort(lists); // 
+		
+//		 wirewayParam.put("txxs", "65000");//弹性系数
+//		 wirewayParam.put("pzxs", "0.0000205");//线膨胀系数
+		
+		List<Load> criticalSpanResult = getCriticalSpan(baseParam,wirewayParam,weatherConditions,listsCritical);
+		
+		steps  = initSpan(steps, criticalSpanResult.get(0).getLr1());
+		
+		Map<String,Object> mapResult = calculationHorizontalTension(baseParam,wirewayParam,weatherConditions,criticalSpanResult,lists,steps);
+			
+		
+		mapResult.put("allLoads", lists);//荷载 
+		mapResult.put("criticalSpan", criticalSpanResult);//临界档距
+		
+		return mapResult;
+	}
+	
+	/**
+	 * 得到综合荷载、水平荷载、垂直荷载
+	 * @param baseParam
+	 * @param wirewayParam
+	 * @param weatherConditions
+	 * @param steps
+	 * @return
+	 */
+	public static  Map<String,Object>  getLoad(Map<String,String> baseParam,Map<String,String> wirewayParam,  List<Map<String,String>> weatherConditions)
+	{
+		Map<String,Object> mapResult = new HashMap<String,Object>();
+		
 		List<Load>   listsCritical = new ArrayList<Load>();
 		List<Load>   lists = new ArrayList<Load>();
-		List<List<String>>  loadList = new ArrayList<List<String>>();
-
 		 double breakingForce =  Double.parseDouble(String.valueOf(wirewayParam.get("ldl")));//拉断力
-		
+			
 		 double unitWeight =  Double.parseDouble(String.valueOf(wirewayParam.get("cdzl")));
 		 double diameter =  Double.parseDouble(String.valueOf(wirewayParam.get("wj")));
 
@@ -60,7 +108,7 @@ public class DynamicsFeatures {
 				 int workingConditionNo = Integer.parseInt(String.valueOf(map.get("workingConditionNo")));
 				 String wethername = String.valueOf(map.get("workingConditionName"));
 				 String isWindSpeedConversion = String.valueOf(map.get("isWindSpeedConversion"));
-				 boolean isWindSpeedConversionbooelan = isWindSpeedConversion=="1" ? true:false;
+				 boolean isWindSpeedConversionbooelan = isWindSpeedConversion.equals("1") ? true:false;
 				 double windSpeed=  Double.parseDouble( String.valueOf(map.get("windSpeed")));
 				 
 				 double iceHeightStr =  Double.parseDouble(String.valueOf(map.get("iceThickness")));
@@ -102,15 +150,24 @@ public class DynamicsFeatures {
 			 }
 		 }
 		
-		
+		 mapResult.put("allLoads", lists);
+		 mapResult.put("partLoads", listsCritical);
+		 return mapResult;
+	}
 	
-//		 Collections.sort(lists); // 按年龄排序
-		 ListSortUtil.sort(listsCritical, true, "rp");
-//		 wirewayParam.put("txxs", "65000");//弹性系数
-//		 wirewayParam.put("pzxs", "0.0000205");//线膨胀系数
+	/**
+	 * 得到临界档距
+	 * @param baseParam
+	 * @param wirewayParam
+	 * @param weatherConditions
+	 */
+	public static List<Load>  getCriticalSpan(Map<String,String> baseParam,Map<String,String> wirewayParam,  List<Map<String,String>> weatherConditions,List<Load>   listsCritical )
+	{
+		
+		ListSortUtil.sort(listsCritical, true, "rp");
 		double elasticityCoefficient =  Double.parseDouble(String.valueOf(wirewayParam.get("txxs")));//弹性系数 $N$40
 		double coefficientExpansion =  Double.parseDouble(String.valueOf(wirewayParam.get("pzxs")));//线膨胀系数$N$41
-		
+		 
 		List<Load>  criticalSpan = new ArrayList<Load>();//临界档距
 		
 		 double section =  Double.parseDouble(String.valueOf(wirewayParam.get("jsjm")));//计算截面
@@ -187,54 +244,31 @@ public class DynamicsFeatures {
 //		 List<Double> spans = null;
 		 ListSortUtil.sort(criticalSpan, true, "Lr1");
 		 List<Load> criticalSpanResult = new ArrayList<Load>();
-		 for(int ii=0;ii<criticalSpan.size();ii++)
+		 double nextD = criticalSpan.get(0).getNextWorkingConditionNo();
+		 criticalSpanResult.add(criticalSpan.get(0));
+		 for(int ii=0;ii<nextLists.size();ii++)
 		 {
-			 Load ll = criticalSpan.get(ii);
-			 if(ll.getLr1()== 9999)
+			 double ll = nextLists.get(ii).getNextWorkingConditionNo();
+			 if( ll == nextD)
 			 {
-				 criticalSpanResult.add(ll);
-				 break;
-			 }else
-			 {
-				 criticalSpanResult.add(ll);
+				 Load  l = nextLists.get(ii);
+				 l.setLr1(9999);
+				 criticalSpanResult.add(l);
+				 
 			 }
 		 }
-//		 List<Load> criticalSpanResult = new ArrayList<Load>();
-//		 criticalSpanResult.add(criticalSpan.get(0));
-//		
-//		 Load l =  getLoadByNo((int)criticalSpan.get(0).getNextWorkingConditionNo(),nextLists);
-//		 l.setLr1(9999);
-//		 criticalSpanResult.add(l);
 		 
-		 
-//		 if(steps.size() == 3)
-//		 {
-//			  spans = initSpan(steps.get(0),steps.get(1),steps.get(2),criticalSpan.get(0).getLr1());
-//		 }else
-//		 {
-//			 spans = steps;
-//		 }
-//		 System.out.println(criticalSpan.get(0).getLr1());
-//		 System.out.println(criticalSpan.get(1).getLr1());
-//		 System.out.println(criticalSpan.get(2).getLr1());
-		
-		 
-//		 System.out.println(criticalSpan.get(0).getLr1());
-//		 System.out.println(criticalSpan.get(1).getLr1());
-//		 System.out.println(criticalSpan.get(2).getLr1());
-		 Map<String,Object> mapResult = calculationHorizontalTension(baseParam,wirewayParam,weatherConditions,criticalSpanResult,lists,steps);
-			
-		return mapResult;
+		 return criticalSpanResult;
 	}
 	/**
-	 * 计算水平张力
+	 * 计算水平张力、弧垂、架线百米弧垂
 	 * @param baseParam
 	 * @param wirewayParam
 	 * @param weatherConditions
 	 * @param loads
 	 * @return
 	 */
-	private static Map<String,Object>  calculationHorizontalTension(Map<String,String> baseParam,Map<String,String> wirewayParam,  List<Map<String,String>> weatherConditions,List<Load> loads,List<Load> loadsAll, List<Double> spans )
+	public static Map<String,Object>  calculationHorizontalTension(Map<String,String> baseParam,Map<String,String> wirewayParam,  List<Map<String,String>> weatherConditions,List<Load> loads,List<Load> loadsAll, List<Double> spans )
 	{
 		 Map<String,Object> mapResult = new HashMap<String,Object>();
 		
@@ -254,7 +288,7 @@ public class DynamicsFeatures {
 		 for(int i=0;i<spans.size();i++)
 		 {
 			 double lr = spans.get(i);
-//			 if(lr ==70 )
+//			 if(lr ==50 )
 //			 {
 //				 System.out.println();
 //			 }
@@ -337,10 +371,10 @@ public class DynamicsFeatures {
 						
 					 //=500*G426/G434
 					 double k = 500*γ/σ;
-					 if(no==12)
-					 {
-						 System.out.println("11 no："+no+",k:"+k+",lr"+lr);
-					 }
+//					 if(no==12)
+//					 {
+//						 System.out.println("11 no："+no+",k:"+k+",lr"+lr);
+//					 }
 					double sagv = k*Math.pow(lr, 2)/4000;
 					 sag = setSag(sag,no,sagv);
 			 	}
@@ -445,14 +479,14 @@ public class DynamicsFeatures {
 	 * @return
 	 */
 	private static Sag setSag(Sag sag, int no, double σ) {
-		if(no==3)
+		if(no==4)
 		 {
 			sag.setIcing(σ);
-		 }else  if(no==4)
+		 }else  if(no==5)
 		 {
 			 sag.setMaxTemperature(σ);
 		 }
-		 else  if(no==6)
+		 else  if(no==7)
 		 {
 			 sag.setAbroadNoWind(σ);
 		 }
@@ -593,26 +627,27 @@ public class DynamicsFeatures {
 	}
 	/**
 	 * 
-	 * @param start 起始
-	 * @param step 步长
-	 * @param max 最大
 	 * @param load
 	 * @return
 	 */
-	private static List<Double> initSpan(double start,double step,double max,double load)
+	public static List<Double> initSpan(List<Double>  list ,double load)
 	{
-		List<Double>  list = new ArrayList<Double>();
-		for(int i=(int)start;i <= max;i+=step)
+		List<Double>  listResult = new ArrayList<Double>();
+		for(int i=0 ;i < list.size();i++)
 		{
-			list.add((double)i);
-
-			if(load>i && load <i+step)
+			Double d = Double.parseDouble(list.get(i)+"");
+			
+			if(load>d && list.size()> (i+1) && load < Double.parseDouble(list.get(i+1)+"")  )
 			{
-				list.add(load);
+				listResult.add(d);
+				listResult.add(load);
+			}else
+			{
+				listResult.add(d);
 			}
 		}
 		
-		return list;
+		return listResult;
 	}
 	/**
 	 * 根据ID获取温度值
@@ -625,7 +660,7 @@ public class DynamicsFeatures {
 		double d=0;
 		for(Map<String, String> map: lists)
 		{
-			if(id.equals(map.get("workingConditionNo")) )
+			if(id.equals(String.valueOf(map.get("workingConditionNo"))) )
 			{
 				d= Double.parseDouble(String.valueOf(map.get("temperature")));
 			}
@@ -840,9 +875,13 @@ public class DynamicsFeatures {
 //			System.out.println(random.nextInt());
 //		}
 		List steps = new ArrayList<Double>();
-		steps.add((double)10);
-		steps.add((double)10);
-		steps.add((double)800);
+		 
+		for(int l=1;l<=80;l++)
+		{
+			 
+			steps.add(10*l);
+		}
+		
 		Map<String,String> baseParam = new HashMap<String,String>();
 		baseParam.put("dxxh", "JL/G1A-300/25");//导线型号
 		baseParam.put("zdzl", "0.25");//最大平均运行张力
@@ -1021,6 +1060,7 @@ public class DynamicsFeatures {
 		 temp15.put("isWindSpeedConversion", "0") ;
 		 temp15.put("remarks", "验算5") ;
 		 
+		
 		 weatherConditions.add(temp1);
 		 weatherConditions.add(temp2);
 		 weatherConditions.add(temp3);
@@ -1045,6 +1085,18 @@ public class DynamicsFeatures {
 		
 		 weatherConditions.add(temp14);
 		 weatherConditions.add(temp15);
+		 
+		 
+		 Collections.sort(weatherConditions, new Comparator<Map<String, String>>() {
+	            public int compare(Map<String, String> o1, Map<String, String> o2) {
+	                int map1value = Integer.parseInt(String.valueOf(o1.get("workingConditionNo")));
+	                int map2value = Integer.parseInt(String.valueOf(o2.get("workingConditionNo")));
+	                
+	                return map1value - map2value;
+	            }
+	        });
+		 
+		// System.out.println("22222");
 		initLoad(baseParam,wirewayParam,weatherConditions,steps);
 		
 	}

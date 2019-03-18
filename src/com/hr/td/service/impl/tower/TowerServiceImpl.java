@@ -1,7 +1,6 @@
 package com.hr.td.service.impl.tower;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.hr.td.dao.IBaseDao;
 import com.hr.td.entity.Attachment;
 import com.hr.td.entity.MainInfo;
+import com.hr.td.entity.RouteInfo;
+import com.hr.td.entity.RouteInfoNew;
 import com.hr.td.entity.Tower;
 import com.hr.td.service.tower.ITowerService;
 import com.hr.td.util.Page;
@@ -44,7 +45,7 @@ public class TowerServiceImpl implements ITowerService {
 	public List<Attachment> getAttachment(String id) {
 			
 		StringBuffer sb =new StringBuffer();
-		sb.append("from Attachment where projectId=? order by sortNo ");
+		sb.append("from Attachment where projectId=? and attachmentType=1 order by sortNo ");
 		List<Object> ls = new ArrayList<Object>();
 		ls.add(id);
 		ls.toArray();
@@ -53,6 +54,28 @@ public class TowerServiceImpl implements ITowerService {
 		return list;
 	}
 	
+
+	/**
+	 * 根据工程ID查询Route附件
+	 * 
+	 * @param id工程ID
+	 * @return attachment
+	 */
+	public Attachment getRouteAttachment(String id) {
+			
+		StringBuffer sb =new StringBuffer();
+		sb.append("from Attachment where projectId=? and attachmentType=2 ");
+		List<Object> ls = new ArrayList<Object>();
+		ls.add(id);
+		ls.toArray();
+		List<Attachment> list = baseDao.queryByHQL(sb.toString(),ls.toArray());
+		if(!ToolsUtil.isEmpty(list))
+		{
+			return list.get(0);
+		}
+		return null;	
+	
+	}
 	/**
 	 * 根据主键获取杆塔实体
 	 */
@@ -85,7 +108,7 @@ public class TowerServiceImpl implements ITowerService {
 		int startIndex =CommonTool.ConvertToInt(ToolsUtil.isEmpty(map.get("startIndex"))?0:map.get("startIndex"));
 		StringBuilder hql = new StringBuilder();
 		List<Object> paramList = new ArrayList<Object>();
-		hql.append(" select id, projectName,projectCode,designUnit,designDate,stageId,towerId from mainInfo ");	
+		hql.append(" select id, projectName,projectCode,designUnit,designDate,stageId,towerId from mainInfo order by designDate desc ");	
 		
 		return baseDao.getPageBySql(totalCount, hql.toString(),pageSize,startIndex, paramList.toArray());
 
@@ -112,7 +135,7 @@ public class TowerServiceImpl implements ITowerService {
 	/**
 	 * 保存工程表，附件信息表到数据库
 	 */
-	public boolean addMain(MainInfo main,Tower tower,List<Attachment> attachments) {
+	public boolean addMain(MainInfo main,Tower tower,List<Attachment> attachments,RouteInfo route) {
 		//保存项目
 		baseDao.save(main);
 		//保存杆塔表
@@ -122,6 +145,32 @@ public class TowerServiceImpl implements ITowerService {
 		{
 			baseDao.batchExcute(attachments, Param.OpType.OP_INSERT);
 		}
+		//保存route表
+		if(!ToolsUtil.isEmpty(route.getId()))
+		{
+			baseDao.saveOrUpdate(route);
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * 保存工程表，附件信息表到数据库
+	 */
+	public boolean addMainNew(MainInfo main,List<Attachment> attachments,RouteInfoNew route) {
+		//保存项目
+		baseDao.save(main);
+		//保存附件
+		if(!ToolsUtil.isEmpty(attachments))
+		{
+			baseDao.batchExcute(attachments, Param.OpType.OP_INSERT);
+		}
+		//保存route表
+		if(!ToolsUtil.isEmpty(route.getId()))
+		{
+			baseDao.saveOrUpdate(route);
+		}
+		
 		return true;
 	}
 	
@@ -157,6 +206,38 @@ public class TowerServiceImpl implements ITowerService {
 	}
 	
 	/**
+	 * 保存route文件信息表到数据库
+	 */
+	public boolean saveRouteInfo(RouteInfo route) {
+		//保存route文件信息表
+		baseDao.saveOrUpdate(route);
+		
+		return true;
+	}
+	
+	/**
+	 * 根据工程ID查询Route文件信息表
+	 * 
+	 * @param id工程ID
+	 * @return RouteInfo
+	 */
+	public RouteInfo getRouteInfo(String id) {
+			
+		StringBuffer sb =new StringBuffer();
+		sb.append("from RouteInfo where projectId=? ");
+		List<Object> ls = new ArrayList<Object>();
+		ls.add(id);
+		ls.toArray();
+		List<RouteInfo> list = baseDao.queryByHQL(sb.toString(),ls.toArray());
+		if(!ToolsUtil.isEmpty(list))
+		{
+			return list.get(0);
+		}
+		return null;	
+	
+	}
+	
+	/**
 	 * 校对杆塔表更新工程表到数据库
 	 */
 	public boolean checkTower(Tower tower,Attachment attach) {
@@ -173,45 +254,25 @@ public class TowerServiceImpl implements ITowerService {
 	@Override
 	public boolean deleteMainInfo(String id) {
 		MainInfo main =(MainInfo) baseDao.getEntity(MainInfo.class, id);
-		Map<String, Object> param=new HashMap<String, Object>();
-	    param.put("projectId", id);
+
 	    Tower tower = getTower(main.getTowerId());
-		List<Attachment> attachments= getAttachment(param);
-		 param.put("projectId", main.getTowerId());
-		 List<Attachment> towerAttachs= getAttachment(param);
+		List<Attachment> attachments= getAttachment(id);
 		if(!ToolsUtil.isEmpty(attachments))
 		{
 			baseDao.batchExcute(attachments, Param.OpType.OP_DELETE);
 		}
 		if(!ToolsUtil.isEmpty(tower))
 		{
-			baseDao.delete(tower);
+		 List<Attachment> towerAttachs= getAttachment(main.getTowerId());
+		 if(!ToolsUtil.isEmpty(towerAttachs))
+			{
+				baseDao.batchExcute(towerAttachs, Param.OpType.OP_DELETE);
+			}
+		baseDao.delete(tower);
 		}
-		if(!ToolsUtil.isEmpty(towerAttachs))
-		{
-			baseDao.batchExcute(towerAttachs, Param.OpType.OP_DELETE);
-		}
+		
 		baseDao.delete(main);
 		return false;
-	}
-	
-	public List<Attachment> getAttachment(Map<String, Object> params) {
-		
-		StringBuilder hql = new StringBuilder();
-		hql.append(" from Attachment pai  ")
-		.append(" where 1=1 ");
-		
-		List<Object> paramList = new ArrayList<Object>();
-		Object obj = null;
-		//工程id
-		if(!ToolsUtil.isEmpty(obj = params.get("projectId")))
-		{
-			hql.append(" and pai.projectId = ? ");
-			paramList.add(obj);
-		}	
-		hql.append(" ORDER BY pai.sortNo ");
-		
-		return baseDao.queryByHQL(hql.toString(), paramList.toArray());
 	}
 	
 }

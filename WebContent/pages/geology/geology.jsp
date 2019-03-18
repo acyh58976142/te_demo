@@ -10,7 +10,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>杆塔位地质明细表</title>
+<title>杆塔位地质明细表新增</title>
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 <link href="<%=basePath%>assets/css/bootstrap/css/bootstarp.style.css" rel="stylesheet" /> 
 <link href="<%=basePath%>assets/css/bootstrap/css/bootstrap.css" rel="stylesheet" />
@@ -28,56 +28,62 @@
 </head>
 <body>
 	<div class="container">
-	  <div class="row">
 	       <!--操作栏-->
-	       <div class="col-xs-12 text-right">
+	       <div class="row row-margin0">
+	       <div class="col-md-4 col-xs-4">
+				<div class="input-group">
+					<label class="input-group-addon">选择工程</label> <select
+						class="form-control" id="projectName"></select>
+				</div>
+			</div>
+			<div class="col-md-8 col-xs-8">
 	                <button class="btn btn-info" style="margin-top:0px;" id="geology_add">
 							新加一条
 					</button>
 					<button class="btn btn-info" style="margin-top:0px;" id="geology_delete">
 							删除
 					</button>
+					 <button class="btn btn-info" style="margin-top:0px;" id="geology_save">
+							保存
+				 </button>
+				 </div>
 	       </div>
 	       <!--列表 -->
-	        <div class="col-xs-12 ">
+	        <div class="row row-margin0" id="table_div" style="overflow: auto">
 			       <table class="text-center" id="geology_table">
 			            <caption class="text-center"><u>池州东至县兰溪——尧渡 35kV线路新建工程杆塔位地质明细表</u></caption>
 			            <thead>
 			                <tr>
-			                    <th rowspan="2" style="width: 3%">杆塔编号</th>
-			                    <th rowspan="2" style="width: 3%">杆塔位置</th>
-			                    <th rowspan="2" style="width: 3%">勘探依据</th>
-			                    <th rowspan="2" style="width: 3%">地层名称</th>
-			                    <th rowspan="2" style="width: 3%">层底深度（m）</th>
-			                    <th rowspan="2" style="width: 15%">岩土表述</th>
+			                    <th rowspan="2" style="width: 50px;">杆塔编号</th>
+			                    <th rowspan="2" style="width: 70px;">杆塔位置</th>
+			                    <th rowspan="2" style="width: 100px;">勘探依据</th>
+			                    <th rowspan="2" style="width: 100px;">地层名称</th>
+			                    <th rowspan="2" style="width: 50px;">层底深度（m）</th>
+			                    <th rowspan="2" style="width: 200px;">岩土表述</th>
 			                    <th colspan="6">岩土物理力学指标</th>
 			                    <th colspan="2">微地貌</th>
-			                    <th rowspan="2" style="width: 4%">勘测点位置</th>
-			                    <th rowspan="2" style="width: 5%">地下水位类型埋深（m）</th>
-			                    <th rowspan="2" style="width: 4%">备注</th>
+			                    <th rowspan="2" style="width: 70px;">勘测点位置</th>
+			                    <th rowspan="2" style="width: 50px;">地下水位<br />埋深(m)</th>
+			                    <th rowspan="2" style="width: 50px;">电阻率（Ω•m）</th>
+			                    <th rowspan="2" style="width: 50px;">地层状态</th>
+			                    <th rowspan="2" style="width: 70px;">备注</th>
 			                </tr>
 			                
 			                <tr>
-			                    <th style="width: 3%">重力<br />密度r（kN/m³）</th>
-			                    <th	style="width: 3%">粘聚力C（kPa）</th>
-			                    <th style="width: 3%">内摩<br />擦角φ（°）</th>
-			                    <th style="width: 3%">承载力<br />特征值fak（kPa）</th>
-			                    <th style="width: 5%">桩的极限侧阻力标准值qsik（kPa）</th>
-			                    <th style="width: 5%">桩的极限端阻力标准值qpk（kPa）</th>
-			                    <th>图片</th>
-			                    <th style="width: 4%">说明</th>
+			                    <th style="width: 40px;">重力<br />密度r（kN/m³）</th>
+			                    <th	style="width: 40px;">粘聚力C（kPa）</th>
+			                    <th style="width: 40px;">内摩<br />擦角φ（°）</th>
+			                    <th style="width: 40px;">承载力<br />特征值fak<br />（kPa）</th>
+			                    <th style="width:40px;">桩的极限侧<br />阻力标准值qsik<br />（kPa）</th>
+			                    <th style="width: 40px;">桩的极限端<br />阻力标准值qpk<br />（kPa）</th>
+			                    <th style="width: 40px;">图片</th>
+			                    <th style="width: 40px;">说明</th>
 			                </tr>
 			            </thead>
 			       <tbody>
 			       </tbody>
 			       </table>
 	       </div>
-	        <div class="col-xs-12 text-center">
-	             <button class="btn btn-info" style="" id="geology_save">
-							保存
-				 </button>
-	        </div>
-	  </div>
     </div>
    
    

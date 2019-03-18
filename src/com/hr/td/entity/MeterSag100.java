@@ -1,18 +1,23 @@
 package com.hr.td.entity;
 
-import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * 架线百米弧垂
  * @author zhh
  *-20	-10	0	10	20	30	40
  */
-public class MeterSag100 implements Serializable{
+@Entity
+@Table(name = "mp_meter_sag")
+public class MeterSag100{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private String id;
 	private double representativeSpan;//代表档距
 	private double T20A;
 	private double T10A;
@@ -22,7 +27,21 @@ public class MeterSag100 implements Serializable{
 	private double T20B;
 	private double T30B;
 	private double T40B;
+	private int wireTypeTag;	//参数类型 1:导线 2:地线
 	
+	@Id
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public int getWireTypeTag() {
+		return wireTypeTag;
+	}
+	public void setWireTypeTag(int wireTypeTag) {
+		this.wireTypeTag = wireTypeTag;
+	}
 	public double getT10A() {
 		return T10A;
 	}

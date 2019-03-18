@@ -36,7 +36,7 @@ public class TowerUtil {
 		list.add(file2);
 		list.add(file3); 
 		
-		t.getJColumns(TAUtil.readTa(list));
+		//t.getJColumns(TAUtil.readTa(list));
 		t.getIColumns(TAUtil.readTa(list));
 		logger.info("getIColumns1");
 	}
@@ -65,7 +65,7 @@ public class TowerUtil {
 			for(int i=0;i<BColumns.size();i++) {
 				
 				 double bvalue = BColumns.get(i);
-				if(2 == (int)bvalue)
+				if(2 == (int)bvalue || 3 == (int)bvalue  )
 				{
 					if(!startboo)
 					{

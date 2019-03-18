@@ -5,6 +5,8 @@ var pagingSize = 55;
 var figureNumber = "S1325S-D0102";//图     号
 var drawingLevel = "3";//图纸级别
 
+//工程id(测试)
+var project_id="e6708ef8ddc54c46a56a9b40808ad7e6";
 /**
  * 分页条数
  */
@@ -1042,3 +1044,21 @@ function tablesToExcel(tables, wsnames, wbname, appname) {
 	link.click();
 	document.body.removeChild(link);
 }
+
+/**
+ * 导出word
+ * @param id
+ * @returns
+ */
+function tableExport(id){
+	var doc="";
+	doc+="<table style='border:1px solid;'>";
+	var html=document.getElementById(id).innerHTML;
+	doc+=html;
+	doc+="</table>";
+	var docFile="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:"+doc+"' xmlns='http://www.w3.org/TR/REC-html40'>";
+	docFile=docFile+"<head></head>"+doc+"</body></html>";
+	var base64data="base64,"+window.btoa(unescape(encodeURIComponent(docFile)));
+	window.open('data:application/msword;'+ base64data);
+	}
+
